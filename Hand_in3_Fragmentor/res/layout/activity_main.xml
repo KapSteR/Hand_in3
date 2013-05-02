@@ -8,12 +8,11 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <fragment
-        android:id="@+id/fragment1"
-        android:name="itsmap.f13.stud10731.hand_in3.MenuFragment"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentLeft="true">
+    </FrameLayout>
 
 </RelativeLayout>
