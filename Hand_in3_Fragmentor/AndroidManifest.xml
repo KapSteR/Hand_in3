@@ -22,6 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="itsmap.f13.stud10731.hand_in3.ContentActivity"
+            android:label="@string/title_activity_content" >
+        </activity>
     </application>
 
 </manifest>
