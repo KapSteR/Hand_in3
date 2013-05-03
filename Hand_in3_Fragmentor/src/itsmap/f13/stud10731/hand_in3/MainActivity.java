@@ -42,6 +42,7 @@ public class MainActivity extends FragmentActivity implements OnMenuFragmentClic
 		
 		Intent intent = new Intent(getBaseContext(),ContentActivity.class);
 		intent.putExtra("item", item);
+		
 		startActivity(intent);
 	}
 }
