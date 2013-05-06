@@ -6,15 +6,24 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements OnMenuFragmentClickListener {
+	
+	private boolean isDualPane;
+	private final String TAG = "MainActivity.class"; 
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        View frag = findViewById(R.id.content_fragment_container);
+        isDualPane = (frag != null && frag.getVisibility() == View.VISIBLE);
+        Log.d(TAG,"isDualPane = " + isDualPane);
         
         if (findViewById(R.id.menu_fragment_container) != null) {
         
@@ -27,6 +36,9 @@ public class MainActivity extends FragmentActivity implements OnMenuFragmentClic
 	        fragTrans.add(R.id.menu_fragment_container, new MenuFragment());
 	        fragTrans.commit();
         }
+        
+        
+        
     }
 
     @Override
@@ -40,9 +52,24 @@ public class MainActivity extends FragmentActivity implements OnMenuFragmentClic
 	public void onMenuFragmentClick(String item) {
 		Toast.makeText(getBaseContext(), item, Toast.LENGTH_SHORT).show();
 		
-		Intent intent = new Intent(getBaseContext(),ContentActivity.class);
-		intent.putExtra("item", item);
 		
-		startActivity(intent);
+		
+		if(isDualPane) {
+			//Update/replace fragment
+			FragmentManager fragmentManager = getSupportFragmentManager();
+	        FragmentTransaction fragTrans = fragmentManager.beginTransaction();
+	        
+			if (findViewById(R.id.content_fragment_container) != null) {
+				Log.d(TAG,"Content fragment container is null.");
+				fragTrans.add(R.id.content_fragment_container, new ContentFragment()).commit();
+			}
+			
+			
+		} else {
+			Intent intent = new Intent(getBaseContext(),ContentActivity.class);
+			intent.putExtra("item", item);
+			startActivity(intent);
+		}
+		
 	}
 }
