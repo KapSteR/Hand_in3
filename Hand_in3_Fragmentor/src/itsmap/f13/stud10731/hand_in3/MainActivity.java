@@ -63,7 +63,11 @@ public class MainActivity extends FragmentActivity implements OnMenuFragmentClic
 				ContentFragment contentFragment = new ContentFragment();
 				fragTrans.add(R.id.content_fragment_container, contentFragment).commit();
 				
-				contentFragment.setText(item);
+				if(contentFragment != null && item != null){
+					contentFragment.setText(item);
+				} else {
+					Log.d(TAG,"contentFragment or item is null.");
+				}
 			}
 			
 			
