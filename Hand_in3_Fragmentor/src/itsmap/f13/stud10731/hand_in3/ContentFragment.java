@@ -18,10 +18,12 @@ public class ContentFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
+		
+		
 		View parent = getActivity().findViewById(R.id.content_fragment_container);
 		//Creating layout and textView runtime:
 		ViewGroup layout=new LinearLayout(getActivity().getApplicationContext());
-	    layout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+	    layout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		
 	    if(textView == null){
 	    	textView = new TextView(getActivity().getApplicationContext());
@@ -41,6 +43,7 @@ public class ContentFragment extends Fragment {
 	    
 		layout.addView(textView);
 		((ViewGroup) parent).addView(layout);
+		Log.d(TAG,"ContentFragment onCreate finished.");
 	}
 	
 	@Override
@@ -87,10 +90,11 @@ public class ContentFragment extends Fragment {
 		if(textView == null){
 			Log.d(TAG,"TextView is null");
 			textView = new TextView(getActivity().getApplicationContext());
-			Log.d(TAG,"item = " + item);
 			textView.setText(item);
+			Log.d(TAG,"textView set = " + item);
 		} else {
 			textView.setText(item);
+			Log.d(TAG,"textView set = " + item);
 		}
 	}
 }
