@@ -28,13 +28,15 @@ public class ContentFragment extends Fragment {
 	    }
 	    
 	    //Reloading text into textView, if this has been saved.
-	    if(savedInstanceState == null ){
-	    	Log.d(TAG,"Bundle is null");
+	    if(savedInstanceState == null){
+	    	Log.d(TAG,"Bundle is null or does not contain itemText.");
 	    } else {
-		    String item = (String) savedInstanceState.getCharSequence("itemText");
-		    if(item != null){
-				textView.setText(item);
-		    }
+	    	if(savedInstanceState.containsKey("itemText")){
+			    String item = (String) savedInstanceState.getCharSequence("itemText");
+			    if(item != null){
+					textView.setText(item);
+			    }
+	    	}
 	    }
 	    
 		layout.addView(textView);

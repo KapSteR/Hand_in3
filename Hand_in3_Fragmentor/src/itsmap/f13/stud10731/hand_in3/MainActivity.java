@@ -55,13 +55,15 @@ public class MainActivity extends FragmentActivity implements OnMenuFragmentClic
 		
 		
 		if(isDualPane) {
-			//Update/replace fragment
 			FragmentManager fragmentManager = getSupportFragmentManager();
 	        FragmentTransaction fragTrans = fragmentManager.beginTransaction();
 	        
 			if (findViewById(R.id.content_fragment_container) != null) {
 				Log.d(TAG,"Content fragment container is null.");
-				fragTrans.add(R.id.content_fragment_container, new ContentFragment()).commit();
+				ContentFragment contentFragment = new ContentFragment();
+				fragTrans.add(R.id.content_fragment_container, contentFragment).commit();
+				
+				contentFragment.setText(item);
 			}
 			
 			
