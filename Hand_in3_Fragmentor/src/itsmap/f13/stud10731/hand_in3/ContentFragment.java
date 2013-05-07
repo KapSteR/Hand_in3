@@ -87,6 +87,7 @@ public class ContentFragment extends Fragment {
 		if(textView == null){
 			Log.d(TAG,"TextView is null");
 			textView = new TextView(getActivity().getApplicationContext());
+			Log.d(TAG,"item = " + item);
 			textView.setText(item);
 		} else {
 			textView.setText(item);

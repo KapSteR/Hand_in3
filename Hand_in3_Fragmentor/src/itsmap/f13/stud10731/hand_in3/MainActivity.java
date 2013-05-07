@@ -59,7 +59,6 @@ public class MainActivity extends FragmentActivity implements OnMenuFragmentClic
 	        FragmentTransaction fragTrans = fragmentManager.beginTransaction();
 	        
 			if (findViewById(R.id.content_fragment_container) != null) {
-				Log.d(TAG,"Content fragment container is null.");
 				ContentFragment contentFragment = new ContentFragment();
 				fragTrans.add(R.id.content_fragment_container, contentFragment).commit();
 				
@@ -68,6 +67,8 @@ public class MainActivity extends FragmentActivity implements OnMenuFragmentClic
 				} else {
 					Log.d(TAG,"contentFragment or item is null.");
 				}
+			} else {
+				Log.d(TAG,"Content fragment container is null.");
 			}
 			
 			
