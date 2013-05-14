@@ -15,22 +15,8 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		final TextView feedback = (TextView) findViewById(R.id.feedback);
-		feedback.setOnClickListener(new View.OnClickListener() {
+		feedbackClick();
 
-		  @Override
-		  public void onClick(View v) {
-		    // fire intent to open e-mail app
-			Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-			            "mailto",getString(R.string.mail_addr), null));
-			//emailIntent.putExtra(Intent.EXTRA_SUBJECT, "EXTRA_SUBJECT");
-			startActivity(Intent.createChooser(emailIntent, "Send email..."));
-			  
-		  }
-
-		});
-		
-		
 	}
 
 	@Override
@@ -38,6 +24,24 @@ public class MainActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+
+	public void feedbackClick() {
+		final TextView feedback = (TextView) findViewById(R.id.feedback);
+		feedback.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// Fire intent to open e-mail app
+				Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri
+						.fromParts("mailto", getString(R.string.mail_addr), null));
+				
+				// emailIntent.putExtra(Intent.EXTRA_SUBJECT, "EXTRA_SUBJECT");
+				startActivity(Intent
+						.createChooser(emailIntent, "Send email..."));
+
+			}
+		});
 	}
 
 }
