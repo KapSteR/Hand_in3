@@ -1,8 +1,12 @@
 package com.itsmap.kn10731.themeproject.simpledmiapp;
 
-import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -10,6 +14,23 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		final TextView feedback = (TextView) findViewById(R.id.feedback);
+		feedback.setOnClickListener(new View.OnClickListener() {
+
+		  @Override
+		  public void onClick(View v) {
+		    // fire intent to open e-mail app
+			Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+			            "mailto",getString(R.string.mail_addr), null));
+			//emailIntent.putExtra(Intent.EXTRA_SUBJECT, "EXTRA_SUBJECT");
+			startActivity(Intent.createChooser(emailIntent, "Send email..."));
+			  
+		  }
+
+		});
+		
+		
 	}
 
 	@Override

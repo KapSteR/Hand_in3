@@ -13,4 +13,16 @@
         android:layout_height="wrap_content"
         android:text="@string/hello_world" />
 
+    <TextView
+        android:id="@+id/feedback"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/feedback"
+        android:textSize="12sp"
+    	android:onClick="onClick"
+    	android:clickable="true"
+    	/>
+   
 </RelativeLayout>
