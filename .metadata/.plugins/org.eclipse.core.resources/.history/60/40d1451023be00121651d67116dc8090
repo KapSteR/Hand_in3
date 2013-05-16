@@ -1,0 +1,7 @@
+package iha.smap.jno10695.hand_in5;
+
+import java;
+
+public class DatabaseHandler extends java {
+
+}
