@@ -4,18 +4,22 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
+	private static final String TAG = "MainActivity";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		feedbackClick();
+		startService(service)
+		Log.d(TAG, "onCreateMain");
 
 	}
 
@@ -34,8 +38,9 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// Fire intent to open e-mail app
 				Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri
-						.fromParts("mailto", getString(R.string.mail_addr), null));
-				
+						.fromParts("mailto", getString(R.string.mail_addr),
+								null));
+
 				// emailIntent.putExtra(Intent.EXTRA_SUBJECT, "EXTRA_SUBJECT");
 				startActivity(Intent
 						.createChooser(emailIntent, "Send email..."));

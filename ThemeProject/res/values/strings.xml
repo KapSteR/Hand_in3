@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+
     <string name="app_name">Simple DMI app</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="feedback">If you have any feedback, shoot us an e-mail</string>
     <string name="mail_addr">10695@iha.dk</string>
+    <string name="loading">Loading weather, please wait</string>
+    <string name="title_activity_region">RegionActivity</string>
+    <string name="title_service_location">LocationService</string>
+    <string name="refreshButton">Update location</string>
+    <string name="forecast_region">Vejrudsigt ikke opdateret</string>
+
 </resources>
