@@ -74,7 +74,7 @@ public class LocationService extends Service {
 		public JSONObject getGeoData(String lat, String lng, String type) {
 			// Takes types "postnumre" or "politikredse"
 			DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-			HttpPost httppost = new HttpPost("http://geo.oiorest.dk/" + type + "/" + lat + "," + lng);
+			HttpPost httppost = new HttpPost("http://geo.oiorest.dk/" + type + "/" + lat + "," + lng+".json");
 			// Depends on your web service
 			httppost.setHeader("Content-type", "application/json");
 
