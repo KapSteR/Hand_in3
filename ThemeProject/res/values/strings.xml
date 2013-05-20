@@ -11,5 +11,13 @@
     <string name="title_service_location">LocationService</string>
     <string name="refreshButton">Update location</string>
     <string name="forecast_region">Vejrudsigt ikke opdateret</string>
+    <string name="nordj">nordjylland</string>
+    <string name="midtj">mvestjylland</string>
+    <string name="ostj">ostjylland</string>
+    <string name="sydj">ssjylland</string>
+    <string name="fyn">fyn</string>
+    <string name="vestsj">vssjlol</string>
+    <string name="kbh">kbhnsj</string>
+    <string name="born">bornholm</string>
 
 </resources>
