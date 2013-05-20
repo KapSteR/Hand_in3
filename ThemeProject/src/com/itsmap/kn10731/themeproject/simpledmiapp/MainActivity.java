@@ -18,7 +18,8 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		feedbackClick();
-		startService(service)
+		Intent intent = new Intent(getApplicationContext(),LocationService.class);
+		startService(intent);
 		Log.d(TAG, "onCreateMain");
 
 	}

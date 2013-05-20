@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="10"
+        android:minSdkVersion="8"
         android:targetSdkVersion="17" />
 
     <application
@@ -34,7 +34,7 @@
         </activity>
         
         <service
-            android:name="com.itsmap.kn10731.themeproject.simpledmiapp.LoacationService"
+            android:name="com.itsmap.kn10731.themeproject.simpledmiapp.LocationService"
             android:label="@string/title_service_location">
             
             
