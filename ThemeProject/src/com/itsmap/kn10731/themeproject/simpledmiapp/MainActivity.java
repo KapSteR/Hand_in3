@@ -91,8 +91,10 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onDestroy() {
 		// TODO: stop service etc.
+		Log.d(TAG,"OnDestroy");
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(
 				mMessageReceiver);
+		stopService(new Intent(getApplicationContext(), LocationService.class));
 		super.onDestroy();
 	}
 

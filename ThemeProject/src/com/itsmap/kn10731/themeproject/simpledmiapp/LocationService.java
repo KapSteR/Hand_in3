@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -15,6 +16,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,6 +60,8 @@ public class LocationService extends Service {
 		public void run() {
 			if (location != null) {
 
+				//TODO: set default parameters
+				
 				String latitude = String.valueOf(location.getLatitude());
 				String longitude = String.valueOf(location.getLongitude());
 
@@ -150,7 +156,17 @@ public class LocationService extends Service {
 			} catch (URISyntaxException e) {
 				Log.d(TAG, e.toString());
 			}
-			DefaultHttpClient httpclient = new DefaultHttpClient();
+			HttpParams httpParameters = new BasicHttpParams();
+			// Set the timeout in milliseconds until a connection is established.
+			// The default value is zero, that means the timeout is not used. 
+			int timeoutConnection = 4000;
+			HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+			// Set the default socket timeout (SO_TIMEOUT) 
+			// in milliseconds which is the timeout for waiting for data.
+			int timeoutSocket = 7000;
+			HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+			
+			DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
 			HttpGet getMethod = new HttpGet(myURI);
 			// Depends on your web service
 			Log.d(TAG, myURI.getPath());
@@ -162,10 +178,12 @@ public class LocationService extends Service {
 				response = httpclient.execute(getMethod);
 			} catch (ClientProtocolException e) {
 				Log.d(TAG, e.toString());
+			} catch (SocketTimeoutException e) {
+				Log.d(TAG, e.toString());
 			} catch (IOException e) {
 				Log.d(TAG, e.toString());
-			}
-
+			} 
+			Log.d(TAG,"http response received");
 			if (response == null) {
 				Log.d(TAG, "HttpResponse is null");
 				// TODO: Internet connection must be enabled!!
