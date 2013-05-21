@@ -55,7 +55,7 @@ public class LocationService extends Service {
 				if (object != null) {
 					parseRegion(object);
 				}
-				if(object != null) {
+				if (object != null) {
 					Intent intent = new Intent(downloadIntentString);
 					intent.putExtra("By", by);
 					intent.putExtra("Postnr", postnr);
