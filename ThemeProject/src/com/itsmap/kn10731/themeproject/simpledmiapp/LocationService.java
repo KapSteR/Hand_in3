@@ -33,9 +33,9 @@ public class LocationService extends Service {
 	boolean canGetLocation = false;
 	Location location; // location
 	protected LocationManager locationManager;
-	private String by;
-	private String postnr;
-	private String region;
+	private String by = "Aarhus C";
+	private String postnr = "8000";
+	private String region = "ostjylland";
 
 	private Runnable downloadTask = new Runnable() {
 		private final String POSTNUMRE = "postnumre";
@@ -43,6 +43,12 @@ public class LocationService extends Service {
 
 		public void run() {
 			if (location != null) {
+				
+				Intent intent = new Intent(getApplicationContext(),
+						WeatherService.class);
+				intent.putExtra("Region", region);
+				startService(intent);
+				
 				String latitude = String.valueOf(location.getLatitude());
 				String longitude = String.valueOf(location.getLongitude());
 
@@ -55,8 +61,9 @@ public class LocationService extends Service {
 				if (object != null) {
 					parseRegion(object);
 				}
+				
 				if (object != null) {
-					Intent intent = new Intent(downloadIntentString);
+					intent = new Intent(downloadIntentString);
 					intent.putExtra("By", by);
 					intent.putExtra("Postnr", postnr);
 					intent.putExtra("Region", region);

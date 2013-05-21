@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO: check for savedInstance, and orientation.
-
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
