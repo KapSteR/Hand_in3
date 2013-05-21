@@ -30,8 +30,8 @@
         </activity>
 
         <provider
-            android:name=".MyContentProvider"
-            android:authorities="iha.smap.jno10695.hand_in5.MyContentProvider"
+            android:name="iha.smap.jno10695.hand_in5.MyContentProvider"
+            android:authorities="iha.smap.jno10695.hand_in5.mycontentprovider"
             android:enabled="true"
             android:exported="true"
             android:label="@string/title_contentprovider"

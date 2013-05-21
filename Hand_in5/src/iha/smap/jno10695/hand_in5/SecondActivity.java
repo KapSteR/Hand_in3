@@ -14,20 +14,24 @@ public class SecondActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d("Second Activity","OnCreate");
+		Log.d("Second Activity", "OnCreate");
 		setContentView(R.layout.activity_second);
 		TextView contactView = (TextView) findViewById(R.id.textview2);
-
+		
+		
+		
+		
 		Cursor cursor = getContacts();
-
+		
 		while (cursor.moveToNext()) {
-
+			Log.d("Second Activity", "while loop");
 			String displayName = cursor.getString(cursor
 					.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
 			contactView.append("Name: ");
 			contactView.append(displayName);
 			contactView.append("\n");
 		}
+		
 	}
 
 	@Override
@@ -40,6 +44,7 @@ public class SecondActivity extends Activity {
 	private Cursor getContacts() {
 
 		// Run query
+		Log.d("Second Activity","getContacts");
 		String[] projection = new String[] { ContactsContract.Contacts._ID,
 				ContactsContract.Contacts.DISPLAY_NAME };
 		String selection = ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '"
@@ -49,6 +54,7 @@ public class SecondActivity extends Activity {
 				+ " COLLATE LOCALIZED ASC";
 
 		ContentResolver cr = getContentResolver();
+		Log.d("Second Activity","getContacts done");
 		// Return all rows
 		return cr.query(MyContentProvider.CONTENT_URI, projection, selection,
 				selectionArgs, sortOrder);

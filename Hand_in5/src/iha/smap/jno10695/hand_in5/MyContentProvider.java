@@ -15,7 +15,7 @@ import android.util.Log;
 public class MyContentProvider extends ContentProvider {
 	private DatabaseHandler myOpenHelper;
 
-	private static final String AUTHORITY = "iha.smap.jno10695.hand_in5";
+	private static final String AUTHORITY = "iha.smap.jno10695.hand_in5.mycontentprovider";
 	private static final String BASE_PATH = "items";
 	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
 			+ "/" + BASE_PATH);
@@ -104,7 +104,7 @@ public class MyContentProvider extends ContentProvider {
 		// Construct the underlying database.
 		// Defer opening the database until you need to perform
 		// a query or transaction.
-		Log.d("Content Provider","OnCreate");
+		Log.d("Content Provider", "OnCreate");
 		myOpenHelper = new DatabaseHandler(getContext());
 		return true;
 	}
