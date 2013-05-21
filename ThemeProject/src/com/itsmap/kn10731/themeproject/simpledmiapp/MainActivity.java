@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
@@ -18,31 +18,35 @@ import android.widget.TextView;
 public class MainActivity extends FragmentActivity {
 
 	private static final String TAG = "MainActivity";
-	public static final String FORECAST_TEXT = "forecastText";
-	public static final String FORECAST_BITMAP = "forecastBitmap";
-	private final String downloadIntentString = "com.kn10731.themeproject.simpledmiapp.downloadIntentString";
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG, "Received broadcast");
 
-			getSupportFragmentManager()
-					.beginTransaction()
-					.replace(R.id.frameLayout, new RegionFragment(),
-							"regionFragment").commit();
-			getSupportFragmentManager().executePendingTransactions();
+			int index = intent.getExtras().getInt(LocationService.INDEX);
+			switch (index) {
+			case LocationService.INDEX_REGION:
 
-			RegionFragment regionFragment = (RegionFragment) getSupportFragmentManager()
-					.findFragmentByTag("regionFragment");
-			
-			if(intent == null){Log.d(TAG,"intent is null");}
-			String str = intent.getExtras().getString(FORECAST_TEXT);
-			if(str == null){Log.d(TAG,"str is null");}
-			Log.d(TAG,str);
-			
-			regionFragment.setTextViev(str);
-//			regionFragment.setRegionBitmap((Bitmap)intent.getParcelableExtra("FORECAST_BITMAP"));
+				FragmentManager fragMang = getSupportFragmentManager();
+				fragMang.beginTransaction()
+						.replace(R.id.frameLayout, new RegionFragment(),
+								"regionFragment").commit();
+				fragMang.executePendingTransactions();
+
+				RegionFragment regionFragment = (RegionFragment) fragMang
+						.findFragmentByTag("regionFragment");
+
+				regionFragment.setTextViev(intent.getExtras().getString(
+						LocationService.FORECAST_TEXT));
+				// regionFragment.setRegionBitmap((Bitmap)intent.getParcelableExtra(LocationService.FORECAST_BITMAP));
+				break;
+			case LocationService.INDEX_BY:
+				// TODO:
+				break;
+			default:
+				Log.d(TAG, "Index not set");
+			}
 		}
 	};
 
@@ -59,7 +63,8 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main);
 
 		LocalBroadcastManager.getInstance(this).registerReceiver(
-				mMessageReceiver, new IntentFilter(downloadIntentString));
+				mMessageReceiver,
+				new IntentFilter(LocationService.BROADCAST_RECEIVER));
 
 		updateButtonClick();
 		feedbackClick();
@@ -72,7 +77,7 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		// TODO Show new activity
+		// TODO Show new fragment
 		super.onConfigurationChanged(newConfig);
 	}
 
@@ -85,6 +90,7 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	protected void onDestroy() {
+		// TODO: stop service etc.
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(
 				mMessageReceiver);
 		super.onDestroy();

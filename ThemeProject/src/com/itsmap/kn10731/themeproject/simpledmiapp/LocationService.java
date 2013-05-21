@@ -29,107 +29,116 @@ import android.util.Log;
 public class LocationService extends Service {
 
 	private static final String TAG = "LocationService";
-	private final String downloadIntentString = "com.kn10731.themeproject.simpledmiapp.downloadIntentString";
-	boolean isGPSEnabled = false;
-	boolean isNetworkEnabled = false;
-	boolean canGetLocation = false;
-	Location location; // location
+
+	public static final String BROADCAST_RECEIVER = "com.kn10731.themeproject.simpledmiapp.downloadIntentString";
+	public static final String FORECAST_TEXT = "ForecastText";
+	public static final String FORECAST_BITMAP = "ForecastBitmap";
+	public static final String BY = "By";
+	public static final String POST_NUMMER = "Postnr";
+	public static final String REGION = "Region";
+	public static final String INDEX = "Index";
+	public static final int INDEX_REGION = 1;
+	public static final int INDEX_BY = 2;
+
 	protected LocationManager locationManager;
-	private String by = "Aarhus C";
-	private String postnr = "8000";
+	private boolean isGPSEnabled = false;
+	private boolean isNetworkEnabled = false;
+	private boolean canGetLocation = false;
+	private Location location;
+	private String city = "Aarhus C";
+	private String postalCode = "8000";
 	private String region = "ostjylland";
 
 	private Runnable downloadTask = new Runnable() {
-		private final String POSTNUMRE = "postnumre";
-		private final String POLITIKREDSE = "politikredse";
+		private static final String POSTAL_CODE = "postnumre";
+		private static final String POLICE_COMMUNITY = "politikredse";
 
 		public void run() {
 			if (location != null) {
-				
-//				Intent intent = new Intent(getApplicationContext(),
-//						WeatherService.class);
-//				intent.putExtra("Region", region);
-//				startService(intent);
-//				
-//				try {
-//					Thread.sleep(2000);
-//				} catch (InterruptedException e) {
-//					Log.d(TAG,e.toString());
-//				}
-				
-//				intent = new Intent(downloadIntentString);
-//				LocalBroadcastManager.getInstance(getBaseContext())
-//				.sendBroadcast(intent);
-				
+
 				String latitude = String.valueOf(location.getLatitude());
 				String longitude = String.valueOf(location.getLongitude());
 
-				JSONObject object = getGeoData(latitude, longitude, POSTNUMRE);
-				if (object != null) {
-					parsePostnumre(object);
+				// Get data for Region
+				JSONObject jObject = getGeoData(latitude, longitude,
+						POLICE_COMMUNITY);
+				if (jObject != null) {
+					parseRegion(jObject);
 				}
 
-				object = getGeoData(latitude, longitude, POLITIKREDSE);
-				if (object != null) {
-					parseRegion(object);
-				}
-				
-//				if (object != null) {
-					Intent intent = new Intent(downloadIntentString);
-					intent.putExtra(MainActivity.FORECAST_TEXT,getTextForecast(region));
-					intent.putExtra("By", by);
-					intent.putExtra("Postnr", postnr);
-					intent.putExtra("Region", region);
+				if (region != null) {
+					String foreCastText = getTextForecast(region);
+					if (foreCastText == null) {
+						foreCastText = getString(R.string.forecastTextError);
+					}
+					// TODO: getForecastBitmap()
+
+					Intent intent = new Intent(BROADCAST_RECEIVER);
+					intent.putExtra(FORECAST_TEXT, foreCastText);
+					intent.putExtra(INDEX, INDEX_REGION);
 					LocalBroadcastManager.getInstance(getBaseContext())
-					.sendBroadcast(intent);
-//				}
+							.sendBroadcast(intent);
+				} else {
+					Log.d(TAG, "region is null");
+				}
+
+				//TODO: Get data for City
 			}
 		}
 
 		public String getTextForecast(String region) {
 			URL url = null;
 			try {
-				url = new URL("http://www.dmi.dk/dmi/index/danmark/regionaludsigten/" + region +".htm");
+				url = new URL(
+						"http://www.dmi.dk/dmi/index/danmark/regionaludsigten/"
+								+ region + ".htm");
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		    BufferedReader reader = null;
-		    StringBuilder builder = new StringBuilder();
-		    try {
-		        reader = new BufferedReader(new InputStreamReader(url.openStream(), "ISO-8859-1"));
-		        
-		        for(int i = 1; i<678 ;i++){ //skip first 677 lines
-		        	reader.readLine();
-		        }
-		        builder.append(reader.readLine().trim()); //Line 678 is the weather Forecast
-		        
-		    } catch (UnsupportedEncodingException e) {
+			BufferedReader reader = null;
+			StringBuilder builder = new StringBuilder();
+			try {
+				reader = new BufferedReader(new InputStreamReader(
+						url.openStream(), "ISO-8859-1"));
+
+				for (int i = 1; i < 678; i++) { // skip first 677 lines
+					reader.readLine();
+				}
+				builder.append(reader.readLine().trim()); // Line 678 is the
+															// weather Forecast
+
+			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
-		        if (reader != null) try { reader.close(); } catch (IOException logOrIgnore) {}
-		    }
-		    
-		    try{
-		    String start = "<td class=\"broedtekst\"><td>";
-		    String end = "</td>";
-		    String part = builder.substring(builder.indexOf(start) + start.length() + 1);
-		    String question = part.substring(0, part.indexOf(end));   
-		    Log.d(TAG, question);
-		    
-		    return question;
-		    
-		    } catch(Exception e){
-		    	Log.d(TAG,e.toString());
-		    }
+				if (reader != null)
+					try {
+						reader.close();
+					} catch (IOException logOrIgnore) {
+					}
+			}
+
+			try {
+				String start = "<td class=\"broedtekst\"><td>";
+				String end = "</td>";
+				String part = builder.substring(builder.indexOf(start)
+						+ start.length() + 1);
+				String question = part.substring(0, part.indexOf(end));
+				Log.d(TAG, question);
+
+				return question;
+
+			} catch (Exception e) {
+				Log.d(TAG, e.toString());
+			}
 			return null;
-		    
+
 		}
-		
+
 		public JSONObject getGeoData(String lat, String lng, String type) {
 			// Takes types "postnumre" or "politikredse"
 
@@ -206,9 +215,9 @@ public class LocationService extends Service {
 
 		public void parsePostnumre(JSONObject jObject) {
 			try {
-				by = jObject.getString("navn");
-				postnr = jObject.getString("fra");
-				Log.d(TAG, "By: " + by + ". Postnr: " + postnr);
+				city = jObject.getString("navn");
+				postalCode = jObject.getString("fra");
+				Log.d(TAG, "By: " + city + ". Postnr: " + postalCode);
 			} catch (JSONException e) {
 			}
 
@@ -303,17 +312,12 @@ public class LocationService extends Service {
 					}
 				}
 			}
+			// TODO: if canGetLocation == false..
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return location;
-	}
-
-	public void printLocation(Location location) {
-		String lat = String.valueOf(location.getLatitude());
-		String lng = String.valueOf(location.getLongitude());
-		Log.d(TAG, "Lat: " + lat + ". Lng: " + lng);
 	}
 
 	@Override
@@ -328,13 +332,11 @@ public class LocationService extends Service {
 
 		location = getLocation();
 		if (location != null) {
-			printLocation(location);
+			String lat = String.valueOf(location.getLatitude());
+			String lng = String.valueOf(location.getLongitude());
+			Log.d(TAG, "Lat: " + lat + ". Lng: " + lng);
 		}
 
-		runBackgroundThread();
-	}
-
-	private void runBackgroundThread() {
 		Thread backgroundThread = new Thread(downloadTask) {
 			@Override
 			public void run() {
@@ -346,5 +348,4 @@ public class LocationService extends Service {
 		};
 		backgroundThread.start();
 	}
-
 }

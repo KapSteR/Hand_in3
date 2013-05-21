@@ -3,6 +3,7 @@ package com.itsmap.kn10731.themeproject.simpledmiapp;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,7 @@ public class RegionFragment extends Fragment {
 		TextView textView = (TextView) getView().findViewById(R.id.regionTextView);
 //		Log.d(TAG, String.valueOf(textView == null));
 		textView.setText(text);
+		textView.setMovementMethod(new ScrollingMovementMethod());
 	}
 
 

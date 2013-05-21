@@ -21,6 +21,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_below="@+id/imageView1"
+        android:maxLines="10"
+        android:scrollbars="vertical"
         android:text="" />
 
 </RelativeLayout>
