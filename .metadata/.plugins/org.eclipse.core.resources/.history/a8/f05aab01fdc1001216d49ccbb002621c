@@ -62,6 +62,7 @@ public class ContentProvider extends android.content.ContentProvider {
 
 	@Override
 	public boolean onCreate() {
+		db = new DatabaseHandler(getContext());
 		return false;
 	}
 

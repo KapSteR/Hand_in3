@@ -48,7 +48,7 @@ public class SecondActivity extends Activity {
 
 		ContentResolver cr = getContentResolver();
 		// Return all rows
-		return cr.query(ContentProvider.CONTENT_URI, projection, selection,
+		return cr.query(ContentProvider.AUTHORITY, projection, selection,
 				selectionArgs, sortOrder);
 	}
 }

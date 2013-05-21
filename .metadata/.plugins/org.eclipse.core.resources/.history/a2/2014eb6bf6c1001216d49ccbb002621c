@@ -6,12 +6,11 @@ import android.database.Cursor;
 import android.net.Uri;
 
 public class ContentProvider extends android.content.ContentProvider {
+	
+	private DatabaseHandler db;
 
-	private static final String AUTHORITY = "iha.smap.jno10695.hand_in5";
-
-	private static final String BASE_PATH = "items";
-	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
-			+ "/" + BASE_PATH);
+	public static final Uri AUTHORITY = Uri
+			.parse("content://iha.smap.jno10695.hand_in5.contentprovider");
 
 	// ** Using the UriMatcher to handle single or multiple query requests
 	// Create the constants used to differentiate between the different URI
@@ -24,34 +23,22 @@ public class ContentProvider extends android.content.ContentProvider {
 	// represents a single row.
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		uriMatcher.addURI(AUTHORITY, "items",
+		uriMatcher.addURI("dk.iha.itsmap.themeapp.mycontentprovider", "items",
 				ALLROWS);
-		uriMatcher.addURI(AUTHORITY,
+		uriMatcher.addURI("dk.iha.itsmap.themeapp.mycontentprovider",
 				"items/#", SINGLE_ROW);
 	}
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		switch (uriMatcher.match(uri)) {
-		case ALLROWS:
-			return 0; // return rows deleted
-		case SINGLE_ROW:
-			return 0; // return rows deleted
-		default:
-			throw new IllegalArgumentException("Unsupported URI:" + uri);
-		}
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
 	public String getType(Uri uri) {
-		switch (uriMatcher.match(uri)) {
-		case ALLROWS:
-			return "vnd.android.cursor.dir/myprovidercontent";
-		case SINGLE_ROW:
-			return "vnd.android.cursor.item/myprovidercontent";
-		default:
-			throw new IllegalArgumentException("Unsupported URI: " + uri);
-		}
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -62,7 +49,8 @@ public class ContentProvider extends android.content.ContentProvider {
 
 	@Override
 	public boolean onCreate() {
-		return false;
+	    db = new DatabaseHandler(getContext());
+	    return false;
 	}
 
 	@Override

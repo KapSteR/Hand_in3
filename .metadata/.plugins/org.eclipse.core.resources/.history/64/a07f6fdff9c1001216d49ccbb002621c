@@ -3,15 +3,16 @@ package iha.smap.jno10695.hand_in5;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 public class ContentProvider extends android.content.ContentProvider {
 
-	private static final String AUTHORITY = "iha.smap.jno10695.hand_in5";
+	private DatabaseHandler db;
 
-	private static final String BASE_PATH = "items";
-	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
-			+ "/" + BASE_PATH);
+	public static final Uri AUTHORITY = Uri
+			.parse("content://iha.smap.jno10695.hand_in5.contentprovider");
 
 	// ** Using the UriMatcher to handle single or multiple query requests
 	// Create the constants used to differentiate between the different URI
@@ -24,34 +25,22 @@ public class ContentProvider extends android.content.ContentProvider {
 	// represents a single row.
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		uriMatcher.addURI(AUTHORITY, "items",
+		uriMatcher.addURI("dk.iha.itsmap.themeapp.mycontentprovider", "items",
 				ALLROWS);
-		uriMatcher.addURI(AUTHORITY,
+		uriMatcher.addURI("dk.iha.itsmap.themeapp.mycontentprovider",
 				"items/#", SINGLE_ROW);
 	}
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		switch (uriMatcher.match(uri)) {
-		case ALLROWS:
-			return 0; // return rows deleted
-		case SINGLE_ROW:
-			return 0; // return rows deleted
-		default:
-			throw new IllegalArgumentException("Unsupported URI:" + uri);
-		}
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
 	public String getType(Uri uri) {
-		switch (uriMatcher.match(uri)) {
-		case ALLROWS:
-			return "vnd.android.cursor.dir/myprovidercontent";
-		case SINGLE_ROW:
-			return "vnd.android.cursor.item/myprovidercontent";
-		default:
-			throw new IllegalArgumentException("Unsupported URI: " + uri);
-		}
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -62,19 +51,32 @@ public class ContentProvider extends android.content.ContentProvider {
 
 	@Override
 	public boolean onCreate() {
+		db = new DatabaseHandler(getContext());
 		return false;
 	}
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		// If this is a row query, limit the result set to the passed in row.
-		switch (uriMatcher.match(uri)) {
-		case SINGLE_ROW:
-			// TODO: Modify selection based on row id, where:
-			// rowNumber = uri.getPathSegments().get(1));
+		// SQLiteQueryBuilder is a helper class that creates the
+		// proper SQL syntax for us.
+		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+		// Set the table we're querying.
+		qb.setTables(TABLE_COSTUMERS);
+
+		// If the query ends in a specific record number, we're
+		// being asked for a specific record, so set the
+		// WHERE clause in our query.
+		if ((uriMatcher.match(uri)) == SINGLE_ROW) {
+			qb.appendWhere("_id=" + uri.getPath());
 		}
-		return null;
+
+		// Make the query.
+		Cursor cursor = qb.query(db, projection, selection,
+		        selectionArgs, null, null, sortOrder);
+		cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		return cursor;
 	}
 
 	@Override
