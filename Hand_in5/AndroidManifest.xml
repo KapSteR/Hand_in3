@@ -8,7 +8,7 @@
         android:minSdkVersion="10"
         android:targetSdkVersion="17" />
 
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="iha.smap.jno10695.hand_in5.READWRITE" />
 
     <application
         android:allowBackup="true"
@@ -24,7 +24,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="iha.smap.jno10695.hand_in5.SecondActivity"
+            android:label="@string/title_activity_second" >
+        </activity>
 
+        <provider
+            android:name=".contentprovider"
+            android:authorities="iha.smap.jno10695.hand_in5.contentprovider"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="iha.smap.jno10695.hand_in5.READWRITE_TODO" >
+        </provider>
     </application>
 
 </manifest>

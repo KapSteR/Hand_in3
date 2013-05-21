@@ -1,20 +1,21 @@
 package iha.smap.jno10695.hand_in5;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.widget.TextView;
 
-public class ContentProvider extends Activity {
+public class ContentProvider extends android.content.ContentProvider {
 
-	/** Called when the activity is first created. */
+	public static final Uri AUTHORITY = Uri
+			.parse("content://iha.smap.jno10695.hand_in5.contentprovider");
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_contentprovider);
 		TextView contactView = (TextView) findViewById(R.id.contactview);
 
 		Cursor cursor = getContacts();
@@ -40,8 +41,46 @@ public class ContentProvider extends Activity {
 		String sortOrder = ContactsContract.Contacts.DISPLAY_NAME
 				+ " COLLATE LOCALIZED ASC";
 
-		return getContentResolver().query(uri, projection, selection, selectionArgs,
-				sortOrder);
+		return getContentResolver().query(uri, projection, selection,
+				selectionArgs, sortOrder);
+	}
+
+	@Override
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getType(Uri uri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Uri insert(Uri uri, ContentValues values) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean onCreate() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Cursor query(Uri uri, String[] projection, String selection,
+			String[] selectionArgs, String sortOrder) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int update(Uri uri, ContentValues values, String selection,
+			String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
