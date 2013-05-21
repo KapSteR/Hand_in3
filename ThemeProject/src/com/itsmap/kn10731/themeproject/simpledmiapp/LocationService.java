@@ -55,13 +55,14 @@ public class LocationService extends Service {
 				if (object != null) {
 					parseRegion(object);
 				}
-				
-				Intent intent = new Intent(downloadIntentString);
-				intent.putExtra("By", by);
-				intent.putExtra("Postnr", postnr);
-				intent.putExtra("Region", region);
-				LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(
-						intent);
+				if(object != null) {
+					Intent intent = new Intent(downloadIntentString);
+					intent.putExtra("By", by);
+					intent.putExtra("Postnr", postnr);
+					intent.putExtra("Region", region);
+					LocalBroadcastManager.getInstance(getBaseContext())
+							.sendBroadcast(intent);
+				}
 			}
 		}
 
