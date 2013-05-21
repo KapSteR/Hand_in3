@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -44,10 +46,20 @@ public class LocationService extends Service {
 		public void run() {
 			if (location != null) {
 				
-				Intent intent = new Intent(getApplicationContext(),
-						WeatherService.class);
-				intent.putExtra("Region", region);
-				startService(intent);
+//				Intent intent = new Intent(getApplicationContext(),
+//						WeatherService.class);
+//				intent.putExtra("Region", region);
+//				startService(intent);
+//				
+//				try {
+//					Thread.sleep(2000);
+//				} catch (InterruptedException e) {
+//					Log.d(TAG,e.toString());
+//				}
+				
+//				intent = new Intent(downloadIntentString);
+//				LocalBroadcastManager.getInstance(getBaseContext())
+//				.sendBroadcast(intent);
 				
 				String latitude = String.valueOf(location.getLatitude());
 				String longitude = String.valueOf(location.getLongitude());
@@ -62,17 +74,62 @@ public class LocationService extends Service {
 					parseRegion(object);
 				}
 				
-				if (object != null) {
-					intent = new Intent(downloadIntentString);
+//				if (object != null) {
+					Intent intent = new Intent(downloadIntentString);
+					intent.putExtra(MainActivity.FORECAST_TEXT,getTextForecast(region));
 					intent.putExtra("By", by);
 					intent.putExtra("Postnr", postnr);
 					intent.putExtra("Region", region);
 					LocalBroadcastManager.getInstance(getBaseContext())
-							.sendBroadcast(intent);
-				}
+					.sendBroadcast(intent);
+//				}
 			}
 		}
 
+		public String getTextForecast(String region) {
+			URL url = null;
+			try {
+				url = new URL("http://www.dmi.dk/dmi/index/danmark/regionaludsigten/" + region +".htm");
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    BufferedReader reader = null;
+		    StringBuilder builder = new StringBuilder();
+		    try {
+		        reader = new BufferedReader(new InputStreamReader(url.openStream(), "ISO-8859-1"));
+		        
+		        for(int i = 1; i<678 ;i++){ //skip first 677 lines
+		        	reader.readLine();
+		        }
+		        builder.append(reader.readLine().trim()); //Line 678 is the weather Forecast
+		        
+		    } catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+		        if (reader != null) try { reader.close(); } catch (IOException logOrIgnore) {}
+		    }
+		    
+		    try{
+		    String start = "<td class=\"broedtekst\"><td>";
+		    String end = "</td>";
+		    String part = builder.substring(builder.indexOf(start) + start.length() + 1);
+		    String question = part.substring(0, part.indexOf(end));   
+		    Log.d(TAG, question);
+		    
+		    return question;
+		    
+		    } catch(Exception e){
+		    	Log.d(TAG,e.toString());
+		    }
+			return null;
+		    
+		}
+		
 		public JSONObject getGeoData(String lat, String lng, String type) {
 			// Takes types "postnumre" or "politikredse"
 

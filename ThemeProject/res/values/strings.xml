@@ -20,5 +20,7 @@
     <string name="kbh">kbhnsj</string>
     <string name="born">bornholm</string>
     <string name="title_activity_loading_fragment">LoadingFragment</string>
+    <string name="updateButton">Update</string>
+    <string name="title_activity_region_fragment">RegionFragment</string>
 
 </resources>

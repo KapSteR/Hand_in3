@@ -38,8 +38,7 @@
             android:name="com.itsmap.kn10731.themeproject.simpledmiapp.LocationService"
             android:label="@string/title_service_location" >
         </service>
-        <service
-            android:name="com.itsmap.kn10731.themeproject.simpledmiapp.WeatherService">
+        <service android:name="com.itsmap.kn10731.themeproject.simpledmiapp.WeatherService" >
         </service>
     </application>
 
