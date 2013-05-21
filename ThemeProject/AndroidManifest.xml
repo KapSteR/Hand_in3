@@ -8,23 +8,21 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-		android:theme="@style/AppTheme"
-		android:persistent="false">
-		
+        android:persistent="false"
+        android:theme="@style/AppTheme" >
         <uses-library android:name="com.google.android.maps" />
 
-
-        
         <activity
             android:name="com.itsmap.kn10731.themeproject.simpledmiapp.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:configChanges="orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,12 +33,10 @@
             android:name="com.itsmap.kn10731.themeproject.simpledmiapp.RegionActivity"
             android:label="@string/title_activity_region" >
         </activity>
-        
+
         <service
             android:name="com.itsmap.kn10731.themeproject.simpledmiapp.LocationService"
-            android:label="@string/title_service_location">
-            
-            
+            android:label="@string/title_service_location" >
         </service>
     </application>
 

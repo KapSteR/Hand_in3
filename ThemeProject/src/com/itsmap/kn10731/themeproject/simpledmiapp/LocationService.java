@@ -21,11 +21,13 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 public class LocationService extends Service {
 
 	private static final String TAG = "LocationService";
+	private final String downloadIntentString = "com.kn10731.themeproject.simpledmiapp.downloadIntentString";
 	boolean isGPSEnabled = false;
 	boolean isNetworkEnabled = false;
 	boolean canGetLocation = false;
@@ -53,6 +55,13 @@ public class LocationService extends Service {
 				if (object != null) {
 					parseRegion(object);
 				}
+				
+				Intent intent = new Intent(downloadIntentString);
+				intent.putExtra("By", by);
+				intent.putExtra("Postnr", postnr);
+				intent.putExtra("Region", region);
+				LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(
+						intent);
 			}
 		}
 
@@ -99,7 +108,7 @@ public class LocationService extends Service {
 			} catch (IOException e) {
 				Log.d(TAG, e.toString());
 			}
-			// json is UTF-8 by default i beleive
+			// json is UTF-8 by default i believe
 			BufferedReader reader = null;
 			try {
 				reader = new BufferedReader(new InputStreamReader(inputStream,
