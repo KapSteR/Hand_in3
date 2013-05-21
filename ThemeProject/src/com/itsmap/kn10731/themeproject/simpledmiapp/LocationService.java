@@ -5,20 +5,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.IBinder;
@@ -27,77 +26,86 @@ import android.util.Log;
 public class LocationService extends Service {
 
 	private static final String TAG = "LocationService";
-	private LocationManager locationManager;
-	private String provider;
-	private String lat;
-	private String lng;
+	boolean isGPSEnabled = false;
+	boolean isNetworkEnabled = false;
+	boolean canGetLocation = false;
+	Location location; // location
+	protected LocationManager locationManager;
 	private String by;
 	private String postnr;
 	private String region;
 
-	private Runnable locationTask = new Runnable() {
+	private Runnable downloadTask = new Runnable() {
+		private final String POSTNUMRE = "postnumre";
+		private final String POLITIKREDSE = "politikredse";
+
 		public void run() {
-			// Get the location manager
-			locationManager = (LocationManager) getBaseContext()
-					.getSystemService(Context.LOCATION_SERVICE);
-			// Define the criteria how to select the location provider -> use
-			// default
-			Criteria criteria = new Criteria();
+			if (location != null) {
+				String latitude = String.valueOf(location.getLatitude());
+				String longitude = String.valueOf(location.getLongitude());
 
-			provider = locationManager.getBestProvider(criteria, false);
-			if (provider != null) {
-				Location location = locationManager
-						.getLastKnownLocation(provider);
-
-				if (location != null) {
-					System.out.println("Provider " + provider
-							+ " has been selected.");
-					onLocationChanged(location);
-					Log.d(TAG, "Lat: " + lat + " Lng: " + lng);
-					parsePostnumre(getGeoData(lat, lng, "postnumre"));
-					parseRegion(getGeoData(lat, lng, "politikredse"));
-				} else {
-					Log.d(TAG, "Failure");
-
+				JSONObject object = getGeoData(latitude, longitude, POSTNUMRE);
+				if (object != null) {
+					parsePostnumre(object);
 				}
-			} else {
-				Log.d(TAG, "Provider is null");
-			}
-		}
 
-		public void onLocationChanged(Location location) {
-			String lat = String.valueOf(location.getLatitude());
-			String lng = String.valueOf(location.getLongitude());
-			Log.d(TAG, "Lat: " + lat + ". Lng: " + lng);
+				object = getGeoData(latitude, longitude, POLITIKREDSE);
+				if (object != null) {
+					parseRegion(object);
+				}
+			}
 		}
 
 		public JSONObject getGeoData(String lat, String lng, String type) {
 			// Takes types "postnumre" or "politikredse"
-			DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-			HttpPost httppost = new HttpPost("http://geo.oiorest.dk/" + type + "/" + lat + "," + lng+".json");
+
+			URI myURI = null;
+
+			try {
+				myURI = new URI("http://geo.oiorest.dk/" + type + "/" + lat
+						+ "," + lng + ".json");
+			} catch (URISyntaxException e) {
+				Log.d(TAG, e.toString());
+			}
+			DefaultHttpClient httpclient = new DefaultHttpClient();
+			HttpGet getMethod = new HttpGet(myURI);
 			// Depends on your web service
-			httppost.setHeader("Content-type", "application/json");
+			Log.d(TAG, myURI.getPath());
 
 			InputStream inputStream = null;
 			String result = null;
 			HttpResponse response = null;
 			try {
-				response = httpclient.execute(httppost);
+				response = httpclient.execute(getMethod);
 			} catch (ClientProtocolException e) {
+				Log.d(TAG, e.toString());
 			} catch (IOException e) {
+				Log.d(TAG, e.toString());
 			}
+
+			if (response == null) {
+				Log.d(TAG, "HttpResponse is null");
+				// TODO: Internet connection must be enabled!!
+				// UnknownHostException
+				return null;
+			}
+
 			HttpEntity entity = response.getEntity();
 
 			try {
 				inputStream = entity.getContent();
 			} catch (IllegalStateException e) {
+				Log.d(TAG, e.toString());
 			} catch (IOException e) {
+				Log.d(TAG, e.toString());
 			}
 			// json is UTF-8 by default i beleive
 			BufferedReader reader = null;
 			try {
-				reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
+				reader = new BufferedReader(new InputStreamReader(inputStream,
+						"UTF-8"), 8);
 			} catch (UnsupportedEncodingException e) {
+				Log.d(TAG, e.toString());
 			}
 			StringBuilder sb = new StringBuilder();
 
@@ -107,35 +115,39 @@ public class LocationService extends Service {
 					sb.append(line + "\n");
 				}
 			} catch (IOException e) {
+				Log.d(TAG, e.toString());
 			}
 			result = sb.toString();
+			Log.d(TAG, result);
 
 			JSONObject jObject = null;
 			try {
 				jObject = new JSONObject(result);
 			} catch (JSONException e) {
+				Log.d(TAG, e.toString());
 			}
-			
+
 			return jObject;
 		}
-		
+
 		public void parsePostnumre(JSONObject jObject) {
 			try {
 				by = jObject.getString("navn");
 				postnr = jObject.getString("fra");
+				Log.d(TAG, "By: " + by + ". Postnr: " + postnr);
 			} catch (JSONException e) {
 			}
-			
+
 		}
-		
+
 		public void parseRegion(JSONObject jObject) {
 			int index = 0;
 			try {
 				index = Integer.parseInt(jObject.getString("nr"));
 			} catch (JSONException e) {
 			}
-			
-			switch(index) {
+
+			switch (index) {
 			case 1:
 				region = getString(R.string.nordj);
 				break;
@@ -175,30 +187,85 @@ public class LocationService extends Service {
 			default:
 				Log.d(TAG, "Errornous region number");
 			}
-			
-			
+			Log.d(TAG, "Region: " + region);
 		}
 	};
 
+	private Location getLocation() {
+		// Get the location manager
+		try {
+			locationManager = (LocationManager) getApplicationContext()
+					.getSystemService(LOCATION_SERVICE);
+
+			// getting GPS status
+			isGPSEnabled = locationManager
+					.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+			// getting network status
+			isNetworkEnabled = locationManager
+					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+			if (!isGPSEnabled && !isNetworkEnabled) {
+				// no network provider is enabled
+			} else {
+				this.canGetLocation = true;
+				// First get location from Network Provider
+				if (isNetworkEnabled) {
+					if (locationManager != null) {
+						location = locationManager
+								.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+						Log.d(TAG, "Getting location with Network");
+					}
+				}
+				// if GPS Enabled get location using GPS Services
+				if (isGPSEnabled) {
+					if (location == null) {
+						Log.d("GPS Enabled", "GPS Enabled");
+						if (locationManager != null) {
+							location = locationManager
+									.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+							Log.d(TAG, "Getting location with GPS");
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return location;
+	}
+
+	public void printLocation(Location location) {
+		String lat = String.valueOf(location.getLatitude());
+		String lng = String.valueOf(location.getLongitude());
+		Log.d(TAG, "Lat: " + lat + ". Lng: " + lng);
+	}
+
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		getLocation();
 		Log.d(TAG, "onCreate");
+
+		location = getLocation();
+		if (location != null) {
+			printLocation(location);
+		}
+
+		runBackgroundThread();
 	}
 
-	private void getLocation() {
-		Thread backgroundThread = new Thread(locationTask) {
+	private void runBackgroundThread() {
+		Thread backgroundThread = new Thread(downloadTask) {
 			@Override
 			public void run() {
 				try {
-					locationTask.run();
+					downloadTask.run();
 				} finally {
 				}
 			}
