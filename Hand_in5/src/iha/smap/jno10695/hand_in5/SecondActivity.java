@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ public class SecondActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d("Second Activity","OnCreate");
 		setContentView(R.layout.activity_second);
 		TextView contactView = (TextView) findViewById(R.id.textview2);
 
@@ -48,7 +50,7 @@ public class SecondActivity extends Activity {
 
 		ContentResolver cr = getContentResolver();
 		// Return all rows
-		return cr.query(ContentProvider.CONTENT_URI, projection, selection,
+		return cr.query(MyContentProvider.CONTENT_URI, projection, selection,
 				selectionArgs, sortOrder);
 	}
 }

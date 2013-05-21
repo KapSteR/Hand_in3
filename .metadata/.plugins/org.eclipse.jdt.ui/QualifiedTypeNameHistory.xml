@@ -3,4 +3,6 @@
 <fullyQualifiedTypeName name="android.util.Log"/>
 <fullyQualifiedTypeName name="android.database.SQLException"/>
 <fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="iha.smap.jno10695.hand_in5.Costumer"/>
+<fullyQualifiedTypeName name="iha.smap.jno10695.hand_in5.DatabaseHandler"/>
 </qualifiedTypeNameHistroy>

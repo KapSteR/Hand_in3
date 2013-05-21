@@ -13,18 +13,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// All Static variables
 	// Database Version
-	private static final int DATABASE_VERSION = 1;
+	public static final int DATABASE_VERSION = 1;
 
 	// Database Name
-	private static final String DATABASE_NAME = "costumersManager";
+	public static final String DATABASE_NAME = "costumersManager";
 
 	// costumers table name
-	private static final String TABLE_COSTUMERS = "costumers";
+	public static final String DATABASE_TABLE = "costumers";
 
 	// costumers Table Columns names
-	private static final String KEY_ID = "id";
-	private static final String KEY_NAME = "name";
-	private static final String KEY_ADDRESS = "address";
+	public static final String KEY_ID = "id";
+	public static final String KEY_NAME = "name";
+	public static final String KEY_ADDRESS = "address";
 
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -33,7 +33,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Creating Tables
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		String CREATE_COSTUMERS_TABLE = "CREATE TABLE " + TABLE_COSTUMERS + "("
+		String CREATE_COSTUMERS_TABLE = "CREATE TABLE " + DATABASE_TABLE + "("
 				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
 				+ KEY_ADDRESS + " TEXT" + ")";
 		db.execSQL(CREATE_COSTUMERS_TABLE);
@@ -43,7 +43,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// Drop older table if existed
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_COSTUMERS);
+		db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
 
 		// Create tables again
 		onCreate(db);
@@ -59,7 +59,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 														// Number
 
 		// Inserting Row
-		db.insert(TABLE_COSTUMERS, null, values);
+		db.insert(DATABASE_TABLE, null, values);
 		db.close(); // Closing database connection
 	}
 
@@ -67,7 +67,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public Costumer getCostumer(int id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
-		Cursor cursor = db.query(TABLE_COSTUMERS, new String[] { KEY_ID,
+		Cursor cursor = db.query(DATABASE_TABLE, new String[] { KEY_ID,
 				KEY_NAME, KEY_ADDRESS }, KEY_ID + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null)
@@ -83,7 +83,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public List<Costumer> getAllCostumers() {
 		List<Costumer> costumerList = new ArrayList<Costumer>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + TABLE_COSTUMERS;
+		String selectQuery = "SELECT  * FROM " + DATABASE_TABLE;
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
@@ -105,9 +105,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 	// Deleting single costumer
-	public void deletecostumer(Costumer costumer) {
+	public void deleteCostumer(Costumer costumer) {
 		SQLiteDatabase db = this.getWritableDatabase();
-		db.delete(TABLE_COSTUMERS, KEY_ID + " = ?",
+		db.delete(DATABASE_TABLE, KEY_ID + " = ?",
 				new String[] { String.valueOf(costumer.getID()) });
 		db.close();
 	}

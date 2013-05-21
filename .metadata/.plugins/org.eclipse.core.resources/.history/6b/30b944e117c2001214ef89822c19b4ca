@@ -1,0 +1,171 @@
+package iha.smap.jno10695.hand_in5;
+
+import android.content.ContentProvider;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
+import android.text.TextUtils;
+import android.util.Log;
+
+public class MyContentProvider extends ContentProvider {
+	private DatabaseHandler myOpenHelper;
+
+	private static final String AUTHORITY = "iha.smap.jno10695.hand_in5";
+	private static final String BASE_PATH = "items";
+	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
+			+ "/" + BASE_PATH);
+
+	// ** Using the UriMatcher to handle single or multiple query requests
+	// Create the constants used to differentiate between the different URI
+	// requests.
+	private static final int ALLROWS = 1;
+	private static final int SINGLE_ROW = 2;
+	private static final UriMatcher uriMatcher;
+	// Populate the UriMatcher object, where a URI ending in 'items' will
+	// correspond to a request for all items, and 'items/[rowID]'
+	// represents a single row.
+	static {
+		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+		uriMatcher.addURI(AUTHORITY, "items", ALLROWS);
+		uriMatcher.addURI(AUTHORITY, "items/#", SINGLE_ROW);
+	}
+
+	@Override
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		// Open a read / write database to support the transaction.
+		SQLiteDatabase db = myOpenHelper.getWritableDatabase();
+		// If this is a row URI, limit the deletion to the specified row.
+		switch (uriMatcher.match(uri)) {
+		case SINGLE_ROW:
+			String rowID = uri.getPathSegments().get(1);
+			selection = DatabaseHandler.KEY_ID
+					+ "="
+					+ rowID
+					+ (!TextUtils.isEmpty(selection) ? " AND (" + selection
+							+ ')' : "");
+		default:
+			break;
+		}
+		// To return the number of deleted items you must specify a where
+		// clause. To delete all rows and return a value pass in “1”.
+		if (selection == null)
+			selection = "1";
+		// Perform the deletion.
+		int deleteCount = db.delete(DatabaseHandler.DATABASE_TABLE, selection,
+				selectionArgs);
+		// Notify any observers of the change in the data set.
+		getContext().getContentResolver().notifyChange(uri, null);
+		// Return the number of deleted items.
+		return deleteCount;
+	}
+
+	@Override
+	public String getType(Uri uri) {
+		switch (uriMatcher.match(uri)) {
+		case ALLROWS:
+			return "vnd.android.cursor.dir/myprovidercontent";
+		case SINGLE_ROW:
+			return "vnd.android.cursor.item/myprovidercontent";
+		default:
+			throw new IllegalArgumentException("Unsupported URI: " + uri);
+		}
+	}
+
+	@Override
+	public Uri insert(Uri uri, ContentValues values) {
+		// Open a read / write database to support the transaction.
+		SQLiteDatabase db = myOpenHelper.getWritableDatabase();
+		// To add empty rows to your database by passing in an empty
+		// Content Values object you must use the null column hack
+		// parameter to specify the name of the column that can be
+		// set to null.
+		String nullColumnHack = null;
+		// Insert the values into the table
+		long id = db.insert(DatabaseHandler.DATABASE_TABLE, nullColumnHack,
+				values);
+		// Construct and return the URI of the newly inserted row.
+		if (id > -1) {
+			// Construct and return the URI of the newly inserted row.
+			Uri insertedId = ContentUris.withAppendedId(CONTENT_URI, id);
+			// Notify any observers of the change in the data set.
+			getContext().getContentResolver().notifyChange(insertedId, null);
+			return insertedId;
+		} else
+			return null;
+	}
+
+	@Override
+	public boolean onCreate() {
+		// Construct the underlying database.
+		// Defer opening the database until you need to perform
+		// a query or transaction.
+		Log.d("Content Provider","OnCreate");
+		myOpenHelper = new DatabaseHandler(getContext());
+		return true;
+	}
+
+	@Override
+	public Cursor query(Uri uri, String[] projection, String selection,
+			String[] selectionArgs, String sortOrder) {
+		// Open the database.
+		SQLiteDatabase db;
+		try {
+			db = myOpenHelper.getWritableDatabase();
+		} catch (SQLiteException ex) {
+			db = myOpenHelper.getReadableDatabase();
+		}
+		// Replace these with valid SQL statements if necessary.
+		String groupBy = null;
+		String having = null;
+		// Use an SQLite Query Builder to simplify constructing the
+		// database query.
+		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+		// If this is a row query, limit the result set to the passed in row.
+		switch (uriMatcher.match(uri)) {
+		case SINGLE_ROW:
+			String rowID = uri.getPathSegments().get(1);
+			queryBuilder.appendWhere("_id" + "=" + rowID);
+		default:
+			break;
+		}
+		// Specify the table on which to perform the query. This can
+		// be a specific table or a join as required.
+		queryBuilder.setTables(DatabaseHandler.DATABASE_TABLE);
+		// Execute the query.
+		Cursor cursor = queryBuilder.query(db, projection, selection,
+				selectionArgs, groupBy, having, sortOrder);
+		// Return the result Cursor.
+		return cursor;
+	}
+
+	@Override
+	public int update(Uri uri, ContentValues values, String selection,
+			String[] selectionArgs) {
+		// Open a read / write database to support the transaction.
+		SQLiteDatabase db = myOpenHelper.getWritableDatabase();
+		// If this is a row URI, limit the deletion to the specified row.
+		switch (uriMatcher.match(uri)) {
+		case SINGLE_ROW:
+			String rowID = uri.getPathSegments().get(1);
+			selection = DatabaseHandler.KEY_ID
+					+ "="
+					+ rowID
+					+ (!TextUtils.isEmpty(selection) ? " AND (" + selection
+							+ ')' : "");
+		default:
+			break;
+		}
+		// Perform the update.
+		int updateCount = db.update(DatabaseHandler.DATABASE_TABLE, values,
+				selection, selectionArgs);
+		// Notify any observers of the change in the data set.
+		getContext().getContentResolver().notifyChange(uri, null);
+		return updateCount;
+	}
+
+}

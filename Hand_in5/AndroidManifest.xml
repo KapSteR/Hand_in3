@@ -30,11 +30,12 @@
         </activity>
 
         <provider
-            android:name=".contentprovider"
-            android:authorities="iha.smap.jno10695.hand_in5.contentprovider"
+            android:name=".MyContentProvider"
+            android:authorities="iha.smap.jno10695.hand_in5.MyContentProvider"
             android:enabled="true"
             android:exported="true"
-            android:permission="iha.smap.jno10695.hand_in5.READWRITE_TODO" >
+            android:label="@string/title_contentprovider"
+            android:permission="iha.smap.jno10695.hand_in5.READWRITE" >
         </provider>
     </application>
 
