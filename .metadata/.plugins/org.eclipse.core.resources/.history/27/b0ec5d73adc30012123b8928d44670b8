@@ -46,6 +46,35 @@ public class MyContentProvider extends ContentProvider {
 	}
 
 	@Override
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		// Open a read / write database to support the transaction.
+		SQLiteDatabase db = myOpenHelper.getWritableDatabase();
+		// If this is a row URI, limit the deletion to the specified row.
+		switch (uriMatcher.match(uri)) {
+		case SINGLE_ROW:
+			String rowID = uri.getPathSegments().get(1);
+			selection = DatabaseHandler.KEY_ID
+					+ "="
+					+ rowID
+					+ (!TextUtils.isEmpty(selection) ? " AND (" + selection
+							+ ')' : "");
+		default:
+			break;
+		}
+		// To return the number of deleted items you must specify a where
+		// clause. To delete all rows and return a value pass in “1”.
+		if (selection == null)
+			selection = "1";
+		// Perform the deletion.
+		int deleteCount = db.delete(DatabaseHandler.DATABASE_TABLE, selection,
+				selectionArgs);
+		// Notify any observers of the change in the data set.
+		getContext().getContentResolver().notifyChange(uri, null);
+		// Return the number of deleted items.
+		return deleteCount;
+	}
+
+	@Override
 	public String getType(Uri uri) {
 		switch (uriMatcher.match(uri)) {
 		case ALLROWS:
@@ -137,35 +166,6 @@ public class MyContentProvider extends ContentProvider {
 		// Notify any observers of the change in the data set.
 		getContext().getContentResolver().notifyChange(uri, null);
 		return updateCount;
-	}
-
-	@Override
-	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		// Open a read / write database to support the transaction.
-		SQLiteDatabase db = myOpenHelper.getWritableDatabase();
-		// If this is a row URI, limit the deletion to the specified row.
-		switch (uriMatcher.match(uri)) {
-		case SINGLE_ROW:
-			String rowID = uri.getPathSegments().get(1);
-			selection = DatabaseHandler.KEY_ID
-					+ "="
-					+ rowID
-					+ (!TextUtils.isEmpty(selection) ? " AND (" + selection
-							+ ')' : "");
-		default:
-			break;
-		}
-		// To return the number of deleted items you must specify a where
-		// clause. To delete all rows and return a value pass in “1”.
-		if (selection == null)
-			selection = "1";
-		// Perform the deletion.
-		int deleteCount = db.delete(DatabaseHandler.DATABASE_TABLE, selection,
-				selectionArgs);
-		// Notify any observers of the change in the data set.
-		getContext().getContentResolver().notifyChange(uri, null);
-		// Return the number of deleted items.
-		return deleteCount;
 	}
 
 }

@@ -17,11 +17,6 @@ public class MainActivity extends ListActivity {
 		setContentView(R.layout.activity_main);
 
 		DatabaseHandler db = new DatabaseHandler(this);
-		
-		for(int i = 0 ; i < 100 ; i++)
-		{
-			db.deleteCostumer(new Costumer(i, "", ""));
-		}
 
 		// Inserting Costumers
 		Log.d("Main Activity ", "Inserting ..");
@@ -29,6 +24,11 @@ public class MainActivity extends ListActivity {
 		db.addCostumer(new Costumer(1, "Srinivas", "9199999999"));
 		db.addCostumer(new Costumer(2, "Tommy", "9522222222"));
 		db.addCostumer(new Costumer(3, "Lolface", "37708"));
+		
+		for(int i = 0 ; i < 100 ; i++)
+		{
+			db.deleteCostumer(new Costumer(i, "", ""));
+		}
 
 		// Reading all costumers
 		Log.d("Reading: ", "Reading all costumers..");
