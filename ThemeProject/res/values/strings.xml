@@ -10,14 +10,6 @@
     <string name="title_service_location">LocationService</string>
     <string name="refreshButton">Update location</string>
     <string name="forecast_region">Vejrudsigt ikke opdateret</string>
-    <string name="nordj">nordjylland</string>
-    <string name="midtj">mvestjylland</string>
-    <string name="ostj">ostjylland</string>
-    <string name="sydj">ssjylland</string>
-    <string name="fyn">fyn</string>
-    <string name="vestsj">vssjlol</string>
-    <string name="kbh">kbhnsj</string>
-    <string name="born">bornholm</string>
     <string name="title_activity_loading_fragment">LoadingFragment</string>
     <string name="updateButton">Update</string>
     <string name="title_activity_region_fragment">RegionFragment</string>
@@ -25,4 +17,34 @@
     <string name="title_activity_city">CityActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    
+    <!-- Real region names -->
+    <string name="nordj">Nordjylland</string>
+    <string name="midtj">Midt og Vestjylland</string>
+    <string name="ostj">Østjylland</string>
+    <string name="sydj">Syd og Sønderjylland</string>
+    <string name="fyn">Fyn</string>
+    <string name="vestsj">Vestsjælland og Lolland-Falster</string>
+    <string name="kbh">København og Nordsjælland</string>
+    <string name="born">Bornholm</string>
+    
+        <!-- URL-pieces for forecast png -->
+    <string name="png_nordj">nordjylland</string>
+    <string name="png_midtj">vestjylland</string>
+    <string name="png_ostj">ostjylland</string>
+    <string name="png_sydj">sydjylland</string>
+    <string name="png_fyn">fyn</string>
+    <string name="png_vestsj">vestsjaelland</string>
+    <string name="png_kbh">kobenhavn</string>
+    <string name="png_born">bornholm</string>
+    
+        <!-- URL-pieces for forecast text -->
+    <string name="text_nordj">nordjylland</string>
+    <string name="text_midtj">mvestjylland</string>
+    <string name="text_ostj">ostjylland</string>
+    <string name="text_sydj">ssjylland</string>
+    <string name="text_fyn">fyn</string>
+    <string name="text_vestsj">vssjlol</string>
+    <string name="text_kbh">kbhnsj</string>
+    <string name="text_born">bornholm</string>
 </resources>

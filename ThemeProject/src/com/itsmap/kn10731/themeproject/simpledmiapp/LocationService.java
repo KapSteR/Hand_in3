@@ -55,9 +55,8 @@ public class LocationService extends Service {
 	private boolean isNetworkEnabled = false;
 	private boolean canGetLocation = false;
 	private Location location;
-	private String city = "Aarhus C";
-	private String postalCode = "8000";
-	private String region = "ostjylland";
+	
+	public Position position = new Position();
 
 	private Runnable downloadTask = new Runnable() {
 		private static final String POSTAL_CODE = "postnumre";
@@ -329,48 +328,12 @@ public class LocationService extends Service {
 				index = Integer.parseInt(jObject.getString("nr"));
 			} catch (JSONException e) {
 			}
-
-			switch (index) {
-			case 1:
-				region = getString(R.string.nordj);
-				break;
-			case 10:
-				region = getString(R.string.kbh);
-				break;
-			case 11:
-				region = getString(R.string.kbh);
-				break;
-			case 12:
-				region = getString(R.string.born);
-				break;
-			case 2:
-				region = getString(R.string.ostj);
-				break;
-			case 3:
-				region = getString(R.string.midtj);
-				break;
-			case 4:
-				region = getString(R.string.sydj);
-				break;
-			case 5:
-				region = getString(R.string.sydj);
-				break;
-			case 6:
-				region = getString(R.string.fyn);
-				break;
-			case 7:
-				region = getString(R.string.vestsj);
-				break;
-			case 8:
-				region = getString(R.string.midtj);
-				break;
-			case 9:
-				region = getString(R.string.kbh);
-				break;
-			default:
-				Log.d(TAG, "Errornous region number");
-			}
-			Log.d(TAG, "Region: " + region);
+			
+			position.setRegion(index);
+			
+			
+			
+			Log.d(TAG, "Region: " + position.getRegion());
 		}
 	};
 
