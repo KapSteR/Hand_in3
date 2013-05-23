@@ -20,6 +20,8 @@ public class MainActivity extends FragmentActivity {
 
 	private static final String TAG = "MainActivity";
 
+	private Bitmap twoDayBitmap, nineDayBitmap, fifteenDayBitmap;
+
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -28,23 +30,33 @@ public class MainActivity extends FragmentActivity {
 			int index = intent.getExtras().getInt(LocationService.INDEX);
 			switch (index) {
 			case LocationService.INDEX_REGION:
-
+				Log.d(TAG, "Index is region");
 				FragmentManager fragMang = getSupportFragmentManager();
 				fragMang.beginTransaction()
 						.replace(R.id.frameLayout, new RegionFragment(),
 								"regionFragment").commit();
 				fragMang.executePendingTransactions();
-
+				Log.d(TAG, "1");
 				RegionFragment regionFragment = (RegionFragment) fragMang
 						.findFragmentByTag("regionFragment");
 
 				regionFragment.setTextViev(intent.getExtras().getString(
 						LocationService.FORECAST_TEXT));
+				Log.d(TAG, "2");
 				regionFragment.setRegionBitmap((Bitmap) intent
 						.getParcelableExtra(LocationService.FORECAST_BITMAP));
+				fragMang.executePendingTransactions();
+
+				Log.d(TAG, "3");
 				break;
-			case LocationService.INDEX_BY:
-				// TODO:
+			case LocationService.INDEX_CITY:
+				Log.d(TAG, "Index is city");
+				twoDayBitmap = (Bitmap) intent
+						.getParcelableExtra(LocationService.TWO_DAY_BITMAP);
+				nineDayBitmap = (Bitmap) intent
+						.getParcelableExtra(LocationService.NINE_DAY_BITMAP);
+				fifteenDayBitmap = (Bitmap) intent
+						.getParcelableExtra(LocationService.FIFTEEN_DAY_BITMAP);
 				break;
 			default:
 				Log.d(TAG, "Index not set");
@@ -61,6 +73,7 @@ public class MainActivity extends FragmentActivity {
 				.beginTransaction()
 				.add(R.id.frameLayout, new LoadingFragment(), "loadingFragment")
 				.commit();
+		getSupportFragmentManager().executePendingTransactions();
 
 		setContentView(R.layout.activity_main);
 
@@ -81,12 +94,16 @@ public class MainActivity extends FragmentActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		// TODO Show new fragment
 		super.onConfigurationChanged(newConfig);
-		int requestCode = 1;
-		
+
 		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			Intent intent = new Intent(getBaseContext(), CityActivity.class);
-			startActivityForResult(intent, requestCode);
-		} 
+			intent.putExtra(LocationService.TWO_DAY_BITMAP, twoDayBitmap);
+			intent.putExtra(LocationService.NINE_DAY_BITMAP, nineDayBitmap);
+			intent.putExtra(LocationService.FIFTEEN_DAY_BITMAP,
+					fifteenDayBitmap);
+			Log.d(TAG, "Starting CityActivity");
+			startActivity(intent);
+		}
 
 	}
 

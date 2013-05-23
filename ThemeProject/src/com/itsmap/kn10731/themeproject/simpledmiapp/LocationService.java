@@ -39,14 +39,16 @@ public class LocationService extends Service {
 	private static final String TAG = "LocationService";
 
 	public static final String BROADCAST_RECEIVER = "com.kn10731.themeproject.simpledmiapp.downloadIntentString";
-	public static final String FORECAST_TEXT = "ForecastText";
-	public static final String FORECAST_BITMAP = "ForecastBitmap";
+	public static final String FORECAST_TEXT = "RegionText";
+	public static final String FORECAST_BITMAP = "RegionBitmap";
+	public static final String TWO_DAY_BITMAP = "TwoDayBitmap";
+	public static final String NINE_DAY_BITMAP = "NineDayBitmap";
+	public static final String FIFTEEN_DAY_BITMAP = "FifteenDayBitmap";
 	public static final String BY = "By";
-	public static final String POST_NUMMER = "Postnr";
 	public static final String REGION = "Region";
 	public static final String INDEX = "Index";
 	public static final int INDEX_REGION = 1;
-	public static final int INDEX_BY = 2;
+	public static final int INDEX_CITY = 2;
 
 	protected LocationManager locationManager;
 	private boolean isGPSEnabled = false;
@@ -64,8 +66,8 @@ public class LocationService extends Service {
 		public void run() {
 			if (location != null) {
 
-				//TODO: set default parameters
-				
+				// TODO: set default parameters
+
 				String latitude = String.valueOf(location.getLatitude());
 				String longitude = String.valueOf(location.getLongitude());
 
@@ -77,14 +79,18 @@ public class LocationService extends Service {
 				}
 
 				if (region != null) {
-					String foreCastText = getTextForecast(region);
+					String foreCastText;
+					Bitmap forecastBitmap;
+
+					foreCastText = getTextForecast(region);
 					if (foreCastText == null) {
 						foreCastText = getString(R.string.forecastTextError);
 					}
-					
-					Bitmap forecastBitmap = getForecastBitmap(region);
-					if(forecastBitmap == null){
-						Log.d(TAG,"Bitmap is null");
+
+					forecastBitmap = downlaodBitmap("http://www.dmi.dk/dmi/femdgn_"
+							+ region + ".png");
+					if (forecastBitmap == null) {
+						Log.d(TAG, "Bitmap is null");
 					}
 
 					Intent intent = new Intent(BROADCAST_RECEIVER);
@@ -97,7 +103,47 @@ public class LocationService extends Service {
 					Log.d(TAG, "region is null");
 				}
 
-				//TODO: Get data for City
+				// TODO: Get data for City
+				
+				jObject = getGeoData(latitude, longitude,
+						POSTAL_CODE);
+				if (jObject != null) {
+					parsePostalCode(jObject);
+				}
+				if (postalCode != null) {
+					boolean showUncertanties = true;
+					String twoDayUrl, nineDayUrl, fifteenDayUrl;
+					Bitmap twoDayBitmap, nineDayBitmap, fifteenDayBitmap;
+
+					if (showUncertanties == true) {
+						twoDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr_dag1?by="
+								+ postalCode + "&mode=long&eps=true";
+						nineDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
+								+ postalCode + "&tabel=dag3_9&eps=true";
+						fifteenDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
+								+ postalCode + "&tabel=dag10_15&eps=true";
+
+					} else {
+						twoDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr_dag1?by="
+								+ postalCode + "&mode=long";
+						nineDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
+								+ postalCode + "&tabel=dag3_9";
+						fifteenDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
+								+ postalCode + "&tabel=dag10_15";
+					}
+					twoDayBitmap = downlaodBitmap(twoDayUrl);
+					nineDayBitmap = downlaodBitmap(nineDayUrl);
+					fifteenDayBitmap = downlaodBitmap(fifteenDayUrl);
+
+					Intent intent = new Intent(BROADCAST_RECEIVER);
+
+					intent.putExtra(TWO_DAY_BITMAP, twoDayBitmap);
+					intent.putExtra(NINE_DAY_BITMAP, nineDayBitmap);
+					intent.putExtra(FIFTEEN_DAY_BITMAP, fifteenDayBitmap);
+					intent.putExtra(INDEX, INDEX_CITY);
+					LocalBroadcastManager.getInstance(getBaseContext())
+							.sendBroadcast(intent);
+				}
 			}
 		}
 
@@ -155,30 +201,30 @@ public class LocationService extends Service {
 
 		}
 
-		private Bitmap getForecastBitmap(String region){
-			Bitmap forecastBitmap = null;
-			
+		private Bitmap downlaodBitmap(String urlString) {
+			Bitmap bitmap = null;
+
 			try {
-			    URL url = new URL("http://www.dmi.dk/dmi/femdgn_" + region +".png");
-			    InputStream in = new BufferedInputStream(url.openStream());
-			    ByteArrayOutputStream out = new ByteArrayOutputStream();
-			    byte[] buf = new byte[1024];
-			    int n = 0;
-			    while (-1!=(n=in.read(buf)))
-			    {
-			       out.write(buf, 0, n);
-			    }
-			    out.close();
-			    in.close();
-			    byte[] response = out.toByteArray();
-			    forecastBitmap = BitmapFactory.decodeByteArray(response , 0, response.length);
-			    return forecastBitmap;
+				URL url = new URL(urlString);
+				InputStream in = new BufferedInputStream(url.openStream());
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				byte[] buf = new byte[1024];
+				int n = 0;
+				while (-1 != (n = in.read(buf))) {
+					out.write(buf, 0, n);
+				}
+				out.close();
+				in.close();
+				byte[] response = out.toByteArray();
+				bitmap = BitmapFactory.decodeByteArray(response, 0,
+						response.length);
+				return bitmap;
 			} catch (IOException e) {
-				Log.d(TAG,e.toString());
+				Log.d(TAG, e.toString());
 			}
 			return null;
 		}
-		
+
 		public JSONObject getGeoData(String lat, String lng, String type) {
 			// Takes types "postnumre" or "politikredse"
 
@@ -191,15 +237,17 @@ public class LocationService extends Service {
 				Log.d(TAG, e.toString());
 			}
 			HttpParams httpParameters = new BasicHttpParams();
-			// Set the timeout in milliseconds until a connection is established.
-			// The default value is zero, that means the timeout is not used. 
+			// Set the timeout in milliseconds until a connection is
+			// established.
+			// The default value is zero, that means the timeout is not used.
 			int timeoutConnection = 4000;
-			HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
-			// Set the default socket timeout (SO_TIMEOUT) 
+			HttpConnectionParams.setConnectionTimeout(httpParameters,
+					timeoutConnection);
+			// Set the default socket timeout (SO_TIMEOUT)
 			// in milliseconds which is the timeout for waiting for data.
 			int timeoutSocket = 7000;
 			HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
-			
+
 			DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
 			HttpGet getMethod = new HttpGet(myURI);
 			// Depends on your web service
@@ -216,8 +264,8 @@ public class LocationService extends Service {
 				Log.d(TAG, e.toString());
 			} catch (IOException e) {
 				Log.d(TAG, e.toString());
-			} 
-			Log.d(TAG,"http response received");
+			}
+			Log.d(TAG, "http response received");
 			if (response == null) {
 				Log.d(TAG, "HttpResponse is null");
 				// TODO: Internet connection must be enabled!!
@@ -265,7 +313,7 @@ public class LocationService extends Service {
 			return jObject;
 		}
 
-		public void parsePostnumre(JSONObject jObject) {
+		public void parsePostalCode(JSONObject jObject) {
 			try {
 				city = jObject.getString("navn");
 				postalCode = jObject.getString("fra");
