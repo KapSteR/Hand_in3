@@ -3,6 +3,9 @@ package com.itsmap.kn10731.themeproject.simpledmiapp;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,11 +28,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -39,6 +44,7 @@ public class LocationService extends Service {
 	private static final String TAG = "LocationService";
 
 	public static final String BROADCAST_RECEIVER = "com.kn10731.themeproject.simpledmiapp.downloadIntentString";
+	public static final String TEMP_FILE_URL = "tempfile";
 	public static final String FORECAST_TEXT = "RegionText";
 	public static final String FORECAST_BITMAP = "RegionBitmap";
 	public static final String TWO_DAY_BITMAP = "TwoDayBitmap";
@@ -55,8 +61,8 @@ public class LocationService extends Service {
 	private boolean isNetworkEnabled = false;
 	private boolean canGetLocation = false;
 	private Location location;
-	
-	public Position position = new Position();
+
+	public Position position = new Position(this);
 
 	private Runnable downloadTask = new Runnable() {
 		private static final String POSTAL_CODE = "postnumre";
@@ -77,17 +83,17 @@ public class LocationService extends Service {
 					parseRegion(jObject);
 				}
 
-				if (region != null) {
+				if (position.getRegion() != null) {
 					String foreCastText;
 					Bitmap forecastBitmap;
 
-					foreCastText = getTextForecast(region);
+					foreCastText = getTextForecast(position.getTextName());
 					if (foreCastText == null) {
 						foreCastText = getString(R.string.forecastTextError);
 					}
 
 					forecastBitmap = downlaodBitmap("http://www.dmi.dk/dmi/femdgn_"
-							+ region + ".png");
+							+ position.getPngName() + ".png");
 					if (forecastBitmap == null) {
 						Log.d(TAG, "Bitmap is null");
 					}
@@ -103,12 +109,13 @@ public class LocationService extends Service {
 				}
 
 				// TODO: Get data for City
-				
-				jObject = getGeoData(latitude, longitude,
-						POSTAL_CODE);
+
+				jObject = getGeoData(latitude, longitude, POSTAL_CODE);
 				if (jObject != null) {
 					parsePostalCode(jObject);
 				}
+
+				String postalCode = position.getPostCode();
 				if (postalCode != null) {
 					boolean showUncertanties = true;
 					String twoDayUrl, nineDayUrl, fifteenDayUrl;
@@ -134,11 +141,26 @@ public class LocationService extends Service {
 					nineDayBitmap = downlaodBitmap(nineDayUrl);
 					fifteenDayBitmap = downlaodBitmap(fifteenDayUrl);
 
-					Intent intent = new Intent(BROADCAST_RECEIVER);
+					File tmpfile = getTempFile(getApplicationContext(), TEMP_FILE_URL);
+					
+					FileOutputStream out;
+					try {
+						out = new FileOutputStream(tmpfile);
+						twoDayBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+						out.flush();
+						out.close();
+						Log.d(TAG,"Bitmap save in cache file.");
+					} catch (FileNotFoundException e) {
+						Log.d(TAG,e.toString());
+					} catch (IOException e) {
+						Log.d(TAG,e.toString());
+					}
 
-					intent.putExtra(TWO_DAY_BITMAP, twoDayBitmap);
-					intent.putExtra(NINE_DAY_BITMAP, nineDayBitmap);
-					intent.putExtra(FIFTEEN_DAY_BITMAP, fifteenDayBitmap);
+					// TODO: Uses cache instead for bitmaps.
+					Intent intent = new Intent(BROADCAST_RECEIVER);
+					// intent.putExtra(TWO_DAY_BITMAP, twoDayBitmap);
+					// intent.putExtra(NINE_DAY_BITMAP, nineDayBitmap);
+					// intent.putExtra(FIFTEEN_DAY_BITMAP, fifteenDayBitmap);
 					intent.putExtra(INDEX, INDEX_CITY);
 					LocalBroadcastManager.getInstance(getBaseContext())
 							.sendBroadcast(intent);
@@ -314,12 +336,12 @@ public class LocationService extends Service {
 
 		public void parsePostalCode(JSONObject jObject) {
 			try {
-				city = jObject.getString("navn");
-				postalCode = jObject.getString("fra");
-				Log.d(TAG, "By: " + city + ". Postnr: " + postalCode);
+				position.setCity(jObject.getString("navn"));
+				position.setPostCode(jObject.getString("fra"));
+				Log.d(TAG, "By: " + position.getCity() + ". Postnr: "
+						+ position.getPostCode());
 			} catch (JSONException e) {
 			}
-
 		}
 
 		public void parseRegion(JSONObject jObject) {
@@ -328,11 +350,9 @@ public class LocationService extends Service {
 				index = Integer.parseInt(jObject.getString("nr"));
 			} catch (JSONException e) {
 			}
-			
+
 			position.setRegion(index);
-			
-			
-			
+
 			Log.d(TAG, "Region: " + position.getRegion());
 		}
 	};
@@ -410,5 +430,18 @@ public class LocationService extends Service {
 			}
 		};
 		backgroundThread.start();
+	}
+
+	public File getTempFile(Context context, String url) {
+		File file;
+		try {
+			String fileName = Uri.parse(url).getLastPathSegment();
+			file = File.createTempFile(fileName, null, context.getCacheDir());
+			return file;
+		} catch (IOException e) {
+			Log.d(TAG, "Could not create file.");
+			return null;
+		}
+
 	}
 }
