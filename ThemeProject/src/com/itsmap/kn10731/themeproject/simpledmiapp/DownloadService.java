@@ -27,6 +27,7 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -39,12 +40,12 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-public class LocationService extends Service {
+public class DownloadService extends Service {
 
-	private static final String TAG = "LocationService";
+	private static final String TAG = "DownloadService";
 
-	public static final String BROADCAST_RECEIVER = "com.kn10731.themeproject.simpledmiapp.downloadIntentString";
-	public static final String TEMP_FILE_URL = "tempfile";
+	public static final String BROADCAST_RECEIVER_MAIN = "com.kn10731.themeproject.simpledmiapp.downloadIntentMain";
+	public static final String BROADCAST_RECEIVER_CITY = "com.kn10731.themeproject.simpledmiapp.downloadIntentCity";
 	public static final String FORECAST_TEXT = "RegionText";
 	public static final String FORECAST_BITMAP = "RegionBitmap";
 	public static final String TWO_DAY_BITMAP = "TwoDayBitmap";
@@ -70,6 +71,12 @@ public class LocationService extends Service {
 
 		public void run() {
 			if (location != null) {
+
+				Activity currentActivity = ((DMIApplication) getApplicationContext())
+						.getCurrentActivity();
+
+				Log.d(TAG, "Activity: "
+						+ currentActivity.getComponentName().getClassName());
 
 				// TODO: set default parameters
 
@@ -98,7 +105,7 @@ public class LocationService extends Service {
 						Log.d(TAG, "Bitmap is null");
 					}
 
-					Intent intent = new Intent(BROADCAST_RECEIVER);
+					Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
 					intent.putExtra(FORECAST_TEXT, foreCastText);
 					intent.putExtra(FORECAST_BITMAP, forecastBitmap);
 					intent.putExtra(INDEX, INDEX_REGION);
@@ -108,8 +115,6 @@ public class LocationService extends Service {
 					Log.d(TAG, "region is null");
 				}
 
-				// TODO: Get data for City
-
 				jObject = getGeoData(latitude, longitude, POSTAL_CODE);
 				if (jObject != null) {
 					parsePostalCode(jObject);
@@ -117,54 +122,67 @@ public class LocationService extends Service {
 
 				String postalCode = position.getPostCode();
 				if (postalCode != null) {
-					boolean showUncertanties = true;
-					String twoDayUrl, nineDayUrl, fifteenDayUrl;
-					Bitmap twoDayBitmap, nineDayBitmap, fifteenDayBitmap;
-
-					if (showUncertanties == true) {
-						twoDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr_dag1?by="
-								+ postalCode + "&mode=long&eps=true";
-						nineDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
-								+ postalCode + "&tabel=dag3_9&eps=true";
-						fifteenDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
-								+ postalCode + "&tabel=dag10_15&eps=true";
-
-					} else {
-						twoDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr_dag1?by="
-								+ postalCode + "&mode=long";
-						nineDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
-								+ postalCode + "&tabel=dag3_9";
-						fifteenDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
-								+ postalCode + "&tabel=dag10_15";
+					// TODO: Change 'true' to setting..
+					downloadAndSaveCityBitmaps(postalCode, true);
+					currentActivity = ((DMIApplication) getApplicationContext())
+							.getCurrentActivity();
+					if (currentActivity.getClass().equals(MainActivity.class)) {
+						Log.d(TAG, "Current activity is MainActivity");
+						Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
+						intent.putExtra(INDEX, INDEX_CITY);
+						LocalBroadcastManager.getInstance(getBaseContext())
+								.sendBroadcast(intent);
+					} else if (currentActivity.getClass().equals(
+							CityActivity.class)) {
+						Log.d(TAG, "Current activity is CityActivity");
+						Intent intent = new Intent(BROADCAST_RECEIVER_CITY);
+						LocalBroadcastManager.getInstance(getBaseContext())
+								.sendBroadcast(intent);
 					}
-					twoDayBitmap = downlaodBitmap(twoDayUrl);
-					nineDayBitmap = downlaodBitmap(nineDayUrl);
-					fifteenDayBitmap = downlaodBitmap(fifteenDayUrl);
-
-					File tmpfile = getTempFile(getApplicationContext(), TEMP_FILE_URL);
-					
-					FileOutputStream out;
-					try {
-						out = new FileOutputStream(tmpfile);
-						twoDayBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-						out.flush();
-						out.close();
-						Log.d(TAG,"Bitmap save in cache file.");
-					} catch (FileNotFoundException e) {
-						Log.d(TAG,e.toString());
-					} catch (IOException e) {
-						Log.d(TAG,e.toString());
-					}
-
-					// TODO: Uses cache instead for bitmaps.
-					Intent intent = new Intent(BROADCAST_RECEIVER);
-					// intent.putExtra(TWO_DAY_BITMAP, twoDayBitmap);
-					// intent.putExtra(NINE_DAY_BITMAP, nineDayBitmap);
-					// intent.putExtra(FIFTEEN_DAY_BITMAP, fifteenDayBitmap);
-					intent.putExtra(INDEX, INDEX_CITY);
-					LocalBroadcastManager.getInstance(getBaseContext())
-							.sendBroadcast(intent);
+				} else {
+					Log.d(TAG, "postalCode not set!");
 				}
+			}
+		}
+
+		private void downloadAndSaveCityBitmaps(String postalCode,
+				boolean showUncertanties) {
+			String twoDayUrl, nineDayUrl, fifteenDayUrl;
+			Bitmap twoDayBitmap, nineDayBitmap, fifteenDayBitmap;
+
+			if (showUncertanties == true) {
+				twoDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr_dag1?by="
+						+ postalCode + "&mode=long&eps=true";
+				nineDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
+						+ postalCode + "&tabel=dag3_9&eps=true";
+				fifteenDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
+						+ postalCode + "&tabel=dag10_15&eps=true";
+
+			} else {
+				twoDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr_dag1?by="
+						+ postalCode + "&mode=long";
+				nineDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
+						+ postalCode + "&tabel=dag3_9";
+				fifteenDayUrl = "http://servlet.dmi.dk/byvejr/servlet/byvejr?by="
+						+ postalCode + "&tabel=dag10_15";
+			}
+			twoDayBitmap = downlaodBitmap(twoDayUrl);
+			nineDayBitmap = downlaodBitmap(nineDayUrl);
+			fifteenDayBitmap = downlaodBitmap(fifteenDayUrl);
+
+			FileOutputStream out;
+			try {
+				out = new FileOutputStream(MainActivity.tmpFile);
+				twoDayBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+				nineDayBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+				fifteenDayBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+				out.flush();
+				out.close();
+				Log.d(TAG, "Bitmaps save in cache file.");
+			} catch (FileNotFoundException e) {
+				Log.d(TAG, e.toString());
+			} catch (IOException e) {
+				Log.d(TAG, e.toString());
 			}
 		}
 
@@ -176,8 +194,7 @@ public class LocationService extends Service {
 						"http://www.dmi.dk/dmi/index/danmark/regionaludsigten/"
 								+ region + ".htm");
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.d(TAG, e.toString());
 			}
 			BufferedReader reader = null;
 			StringBuilder builder = new StringBuilder();
@@ -192,16 +209,15 @@ public class LocationService extends Service {
 															// weather Forecast
 
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.d(TAG, e.toString());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.d(TAG, e.toString());
 			} finally {
 				if (reader != null)
 					try {
 						reader.close();
-					} catch (IOException logOrIgnore) {
+					} catch (IOException e) {
+						Log.d(TAG, e.toString());
 					}
 			}
 
@@ -219,7 +235,6 @@ public class LocationService extends Service {
 				Log.d(TAG, e.toString());
 			}
 			return null;
-
 		}
 
 		private Bitmap downlaodBitmap(String urlString) {
@@ -426,6 +441,8 @@ public class LocationService extends Service {
 				try {
 					downloadTask.run();
 				} finally {
+					Log.d(TAG, "DownloadService stopped.");
+					stopSelf();
 				}
 			}
 		};

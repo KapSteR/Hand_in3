@@ -1,5 +1,9 @@
 package com.itsmap.kn10731.themeproject.simpledmiapp;
 
+import java.io.File;
+import java.io.IOException;
+
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,45 +22,37 @@ import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
 
+	protected DMIApplication mDMIApplication;
 	private static final String TAG = "MainActivity";
 
-	private Bitmap twoDayBitmap, nineDayBitmap, fifteenDayBitmap;
+	public static File tmpFile;
 
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG, "Received broadcast");
 
-			int index = intent.getExtras().getInt(LocationService.INDEX);
+			int index = intent.getExtras().getInt(DownloadService.INDEX);
 			switch (index) {
-			case LocationService.INDEX_REGION:
+			case DownloadService.INDEX_REGION:
 				Log.d(TAG, "Index is region");
 				FragmentManager fragMang = getSupportFragmentManager();
 				fragMang.beginTransaction()
 						.replace(R.id.frameLayout, new RegionFragment(),
 								"regionFragment").commit();
 				fragMang.executePendingTransactions();
-				Log.d(TAG, "1");
 				RegionFragment regionFragment = (RegionFragment) fragMang
 						.findFragmentByTag("regionFragment");
 
 				regionFragment.setTextViev(intent.getExtras().getString(
-						LocationService.FORECAST_TEXT));
-				Log.d(TAG, "2");
+						DownloadService.FORECAST_TEXT));
 				regionFragment.setRegionBitmap((Bitmap) intent
-						.getParcelableExtra(LocationService.FORECAST_BITMAP));
+						.getParcelableExtra(DownloadService.FORECAST_BITMAP));
 				fragMang.executePendingTransactions();
-
-				Log.d(TAG, "3");
 				break;
-			case LocationService.INDEX_CITY:
+			case DownloadService.INDEX_CITY:
 				Log.d(TAG, "Index is city");
-				twoDayBitmap = (Bitmap) intent
-						.getParcelableExtra(LocationService.TWO_DAY_BITMAP);
-				nineDayBitmap = (Bitmap) intent
-						.getParcelableExtra(LocationService.NINE_DAY_BITMAP);
-				fifteenDayBitmap = (Bitmap) intent
-						.getParcelableExtra(LocationService.FIFTEEN_DAY_BITMAP);
+				// TODO: ??
 				break;
 			default:
 				Log.d(TAG, "Index not set");
@@ -67,8 +63,10 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO: check for savedInstance, and orientation.
-
+		Log.d(TAG, "onCreateMain");
 		super.onCreate(savedInstanceState);
+		mDMIApplication = (DMIApplication) this.getApplication();
+
 		getSupportFragmentManager()
 				.beginTransaction()
 				.add(R.id.frameLayout, new LoadingFragment(), "loadingFragment")
@@ -77,34 +75,30 @@ public class MainActivity extends FragmentActivity {
 
 		setContentView(R.layout.activity_main);
 
-		LocalBroadcastManager.getInstance(this).registerReceiver(
-				mMessageReceiver,
-				new IntentFilter(LocationService.BROADCAST_RECEIVER));
-
 		updateButtonClick();
 		feedbackClick();
-		Intent intent = new Intent(getApplicationContext(),
-				LocationService.class);
-		startService(intent);
-		Log.d(TAG, "onCreateMain");
 
+		try {
+			tmpFile = File.createTempFile("BitmapContainer", ".tmp",
+					getCacheDir());
+			Log.d(TAG, "Created file: " + tmpFile.getAbsolutePath());
+		} catch (IOException e) {
+			Log.d(TAG, e.toString());
+		}
+
+		Intent intent = new Intent(getApplication(), DownloadService.class);
+		startService(intent);
 	}
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		// TODO Show new fragment
 		super.onConfigurationChanged(newConfig);
 
 		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			Intent intent = new Intent(getBaseContext(), CityActivity.class);
-			intent.putExtra(LocationService.TWO_DAY_BITMAP, twoDayBitmap);
-			intent.putExtra(LocationService.NINE_DAY_BITMAP, nineDayBitmap);
-			intent.putExtra(LocationService.FIFTEEN_DAY_BITMAP,
-					fifteenDayBitmap);
 			Log.d(TAG, "Starting CityActivity");
 			startActivity(intent);
 		}
-
 	}
 
 	@Override
@@ -116,12 +110,44 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	protected void onDestroy() {
-		// TODO: stop service etc.
 		Log.d(TAG, "OnDestroy");
+		clearActivityReference();
+		stopService(new Intent(getApplication(), DownloadService.class));
+
+		if (tmpFile != null) {
+			Log.d(TAG, "Cache file with path: "
+					+ tmpFile.getAbsolutePath().toString() + " deleted?: "
+					+ (tmpFile.delete() == true));
+		}
+
+		super.onDestroy();
+	}
+
+	@Override
+	protected void onPause() {
+		Log.d(TAG, "onPause");
+		clearActivityReference();
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(
 				mMessageReceiver);
-		stopService(new Intent(getApplicationContext(), LocationService.class));
-		super.onDestroy();
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume() {
+		Log.d(TAG, "onResume");
+		mDMIApplication.setCurrentActivity(this);
+		LocalBroadcastManager.getInstance(this).registerReceiver(
+				mMessageReceiver,
+				new IntentFilter(DownloadService.BROADCAST_RECEIVER_MAIN));
+
+		// if forecast have not been show, restart downloadService
+		if (findViewById(R.id.progressBar1) != null) {
+			Log.d(TAG, "Restarting downloadService.");
+			Intent intent = new Intent(getApplication(), DownloadService.class);
+			stopService(intent);
+			startService(intent);
+		}
+		super.onResume();
 	}
 
 	public void feedbackClick() {
@@ -149,7 +175,17 @@ public class MainActivity extends FragmentActivity {
 
 			@Override
 			public void onClick(View v) {
+				Intent intent = new Intent(getApplication(),
+						DownloadService.class);
+				stopService(intent);
+				startService(intent);
 			}
 		});
+	}
+
+	private void clearActivityReference() {
+		Activity currentActivity = mDMIApplication.getCurrentActivity();
+		if (currentActivity != null && currentActivity.equals(this))
+			mDMIApplication.setCurrentActivity(null);
 	}
 }
