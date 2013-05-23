@@ -1,0 +1,20 @@
+Region bitmap:
+sydjylland
+nordjylland
+vestjylland
+ostjylland
+fyn
+vestsjaelland
+kobenhavn
+bornholm
+
+Region text:
+vssjol
+ssjylland
+ostjylland
+nordjylland
+mvestjylland
+kbhnsj
+fyn
+bornholm
+
