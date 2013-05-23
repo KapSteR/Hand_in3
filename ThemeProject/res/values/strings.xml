@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Simple DMI app</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
     <string name="feedback">If you have any feedback, shoot us an e-mail</string>
     <string name="mail_addr">10695@iha.dk</string>
     <string name="loading">Loading weather, please wait</string>
@@ -17,7 +16,6 @@
     <string name="title_activity_city">CityActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    
     <!-- Real region names -->
     <string name="nordj">Nordjylland</string>
     <string name="midtj">Midt og Vestjylland</string>
@@ -27,8 +25,7 @@
     <string name="vestsj">Vestsjælland og Lolland-Falster</string>
     <string name="kbh">København og Nordsjælland</string>
     <string name="born">Bornholm</string>
-    
-        <!-- URL-pieces for forecast png -->
+    <!-- URL-pieces for forecast png -->
     <string name="png_nordj">nordjylland</string>
     <string name="png_midtj">vestjylland</string>
     <string name="png_ostj">ostjylland</string>
@@ -37,8 +34,7 @@
     <string name="png_vestsj">vestsjaelland</string>
     <string name="png_kbh">kobenhavn</string>
     <string name="png_born">bornholm</string>
-    
-        <!-- URL-pieces for forecast text -->
+    <!-- URL-pieces for forecast text -->
     <string name="text_nordj">nordjylland</string>
     <string name="text_midtj">mvestjylland</string>
     <string name="text_ostj">ostjylland</string>
@@ -47,4 +43,5 @@
     <string name="text_vestsj">vssjlol</string>
     <string name="text_kbh">kbhnsj</string>
     <string name="text_born">bornholm</string>
+    <string name="region">Regional vejrudsigt for</string>
 </resources>

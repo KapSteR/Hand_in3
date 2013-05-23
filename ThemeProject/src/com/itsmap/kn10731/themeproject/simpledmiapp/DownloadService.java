@@ -51,7 +51,6 @@ public class DownloadService extends Service {
 	public static final String TWO_DAY_BITMAP = "TwoDayBitmap";
 	public static final String NINE_DAY_BITMAP = "NineDayBitmap";
 	public static final String FIFTEEN_DAY_BITMAP = "FifteenDayBitmap";
-	public static final String BY = "By";
 	public static final String REGION = "Region";
 	public static final String INDEX = "Index";
 	public static final int INDEX_REGION = 1;
@@ -106,6 +105,7 @@ public class DownloadService extends Service {
 					}
 
 					Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
+					intent.putExtra(REGION, position.getRegion());
 					intent.putExtra(FORECAST_TEXT, foreCastText);
 					intent.putExtra(FORECAST_BITMAP, forecastBitmap);
 					intent.putExtra(INDEX, INDEX_REGION);

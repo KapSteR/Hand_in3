@@ -44,8 +44,10 @@ public class MainActivity extends FragmentActivity {
 				RegionFragment regionFragment = (RegionFragment) fragMang
 						.findFragmentByTag("regionFragment");
 
-				regionFragment.setTextViev(intent.getExtras().getString(
-						DownloadService.FORECAST_TEXT));
+				regionFragment.setTextVievs(intent.getExtras().getString(
+						DownloadService.FORECAST_TEXT),intent.getExtras().getString(
+								DownloadService.REGION));
+				
 				regionFragment.setRegionBitmap((Bitmap) intent
 						.getParcelableExtra(DownloadService.FORECAST_BITMAP));
 				fragMang.executePendingTransactions();

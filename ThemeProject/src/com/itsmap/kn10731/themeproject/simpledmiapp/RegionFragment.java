@@ -28,12 +28,16 @@ public class RegionFragment extends Fragment {
 		imageView.setImageBitmap(bitmap);
 	}
 
-	public void setTextViev(String text) {
-		View view = getView();
-		Log.d(TAG, "View = null:" + String.valueOf(view == null));
-		TextView textView = (TextView) getView().findViewById(
+	public void setTextVievs(String forecastText, String region) {
+		TextView forecastTextView = (TextView) getView().findViewById(
+				R.id.forecastTextView);
+		forecastTextView.setText(forecastText);
+		forecastTextView.setMovementMethod(new ScrollingMovementMethod());
+		
+		TextView regionTextView = (TextView) getView().findViewById(
 				R.id.regionTextView);
-		textView.setText(text);
-		textView.setMovementMethod(new ScrollingMovementMethod());
+		regionTextView.setText(getString(R.string.region) + " " + region);
+		
+		
 	}
 }

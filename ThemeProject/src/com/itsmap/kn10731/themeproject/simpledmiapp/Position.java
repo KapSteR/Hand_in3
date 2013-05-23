@@ -1,7 +1,6 @@
 package com.itsmap.kn10731.themeproject.simpledmiapp;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.Log;
 
 public class Position {
