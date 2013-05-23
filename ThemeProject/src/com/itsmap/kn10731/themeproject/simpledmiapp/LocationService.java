@@ -1,6 +1,8 @@
 package com.itsmap.kn10731.themeproject.simpledmiapp;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,6 +26,8 @@ import org.json.JSONObject;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.IBinder;
@@ -77,10 +81,15 @@ public class LocationService extends Service {
 					if (foreCastText == null) {
 						foreCastText = getString(R.string.forecastTextError);
 					}
-					// TODO: getForecastBitmap()
+					
+					Bitmap forecastBitmap = getForecastBitmap(region);
+					if(forecastBitmap == null){
+						Log.d(TAG,"Bitmap is null");
+					}
 
 					Intent intent = new Intent(BROADCAST_RECEIVER);
 					intent.putExtra(FORECAST_TEXT, foreCastText);
+					intent.putExtra(FORECAST_BITMAP, forecastBitmap);
 					intent.putExtra(INDEX, INDEX_REGION);
 					LocalBroadcastManager.getInstance(getBaseContext())
 							.sendBroadcast(intent);
@@ -92,7 +101,8 @@ public class LocationService extends Service {
 			}
 		}
 
-		public String getTextForecast(String region) {
+		private String getTextForecast(String region) {
+
 			URL url = null;
 			try {
 				url = new URL(
@@ -145,6 +155,30 @@ public class LocationService extends Service {
 
 		}
 
+		private Bitmap getForecastBitmap(String region){
+			Bitmap forecastBitmap = null;
+			
+			try {
+			    URL url = new URL("http://www.dmi.dk/dmi/femdgn_" + region +".png");
+			    InputStream in = new BufferedInputStream(url.openStream());
+			    ByteArrayOutputStream out = new ByteArrayOutputStream();
+			    byte[] buf = new byte[1024];
+			    int n = 0;
+			    while (-1!=(n=in.read(buf)))
+			    {
+			       out.write(buf, 0, n);
+			    }
+			    out.close();
+			    in.close();
+			    byte[] response = out.toByteArray();
+			    forecastBitmap = BitmapFactory.decodeByteArray(response , 0, response.length);
+			    return forecastBitmap;
+			} catch (IOException e) {
+				Log.d(TAG,e.toString());
+			}
+			return null;
+		}
+		
 		public JSONObject getGeoData(String lat, String lng, String type) {
 			// Takes types "postnumre" or "politikredse"
 

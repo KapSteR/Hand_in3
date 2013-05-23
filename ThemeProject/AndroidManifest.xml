@@ -21,7 +21,7 @@
 
         <activity
             android:name="com.itsmap.kn10731.themeproject.simpledmiapp.MainActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,6 +40,17 @@
         </service>
         <service android:name="com.itsmap.kn10731.themeproject.simpledmiapp.WeatherService" >
         </service>
+
+        <activity
+            android:name="com.itsmap.kn10731.themeproject.simpledmiapp.CityActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_city"
+            android:parentActivityName="com.itsmap.kn10731.themeproject.simpledmiapp.RegionActivity"
+            android:theme="@style/FullscreenTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.itsmap.kn10731.themeproject.simpledmiapp.RegionActivity" />
+        </activity>
     </application>
 
 </manifest>

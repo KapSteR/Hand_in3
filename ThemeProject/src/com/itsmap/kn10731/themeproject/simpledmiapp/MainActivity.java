@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -39,7 +40,8 @@ public class MainActivity extends FragmentActivity {
 
 				regionFragment.setTextViev(intent.getExtras().getString(
 						LocationService.FORECAST_TEXT));
-				// regionFragment.setRegionBitmap((Bitmap)intent.getParcelableExtra(LocationService.FORECAST_BITMAP));
+				regionFragment.setRegionBitmap((Bitmap) intent
+						.getParcelableExtra(LocationService.FORECAST_BITMAP));
 				break;
 			case LocationService.INDEX_BY:
 				// TODO:
@@ -79,6 +81,13 @@ public class MainActivity extends FragmentActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		// TODO Show new fragment
 		super.onConfigurationChanged(newConfig);
+		int requestCode = 1;
+		
+		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			Intent intent = new Intent(getBaseContext(), CityActivity.class);
+			startActivityForResult(intent, requestCode);
+		} 
+
 	}
 
 	@Override
@@ -91,7 +100,7 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onDestroy() {
 		// TODO: stop service etc.
-		Log.d(TAG,"OnDestroy");
+		Log.d(TAG, "OnDestroy");
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(
 				mMessageReceiver);
 		stopService(new Intent(getApplicationContext(), LocationService.class));

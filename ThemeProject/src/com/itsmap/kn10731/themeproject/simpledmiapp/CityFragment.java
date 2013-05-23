@@ -11,29 +11,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class RegionFragment extends Fragment {
+public class CityFragment extends Fragment{
 
-	private static final String TAG = "RegionFragment.class";
-
+	private static final String TAG = "CityFragment.class";
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		Log.d(TAG, "OnCreate");
+		Log.d(TAG,"OnCreate");
 		return inflater.inflate(R.layout.fragment_region, container, false);
 	}
 
 	public void setRegionBitmap(Bitmap bitmap) {
-		ImageView imageView = (ImageView) getView().findViewById(
-				R.id.imageView1);
-		imageView.setImageBitmap(bitmap);
-	}
-
-	public void setTextViev(String text) {
-		View view = getView();
-		Log.d(TAG, "View = null:" + String.valueOf(view == null));
-		TextView textView = (TextView) getView().findViewById(
-				R.id.regionTextView);
-		textView.setText(text);
-		textView.setMovementMethod(new ScrollingMovementMethod());
+//		ImageView imageView = (ImageView)getView().findViewById(R.id.); 
+//		imageView.setImageBitmap(bitmap);
 	}
 }

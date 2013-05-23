@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+
     <string name="app_name">Simple DMI app</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
@@ -22,4 +23,8 @@
     <string name="updateButton">Update</string>
     <string name="title_activity_region_fragment">RegionFragment</string>
     <string name="forecastTextError">Forecast text could not be retreived.</string>
+    <string name="title_activity_city">CityActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
 </resources>
