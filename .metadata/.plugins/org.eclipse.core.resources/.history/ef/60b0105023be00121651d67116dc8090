@@ -1,7 +1,0 @@
-package iha.smap.jno10695.hand_in5;
-
-import android.database.sqlite.SQLiteOpenHelper;
-
-public class DatabaseHandler extends SQLiteOpenHelper {
-
-}

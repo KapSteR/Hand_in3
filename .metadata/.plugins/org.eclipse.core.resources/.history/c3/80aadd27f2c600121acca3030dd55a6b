@@ -19,12 +19,11 @@ public class SecondActivity extends Activity {
 		setContentView(R.layout.activity_second);
 
 		TextView contactView = (TextView) findViewById(R.id.textview2);
-		insertContact(5, "jeppe", "læssøesgade");
-		deleteContact(3);
-		Cursor cursor = getContact();
+		insertContacts(5, "jeppe", "læssøesgade");
+		Cursor cursor = getContacts();
 
 		while (cursor.moveToNext()) {
-			Log.d("Second Activity", "while loop until no more id");
+			Log.d("Second Activity", "while loop untill no more id");
 			String displayId = cursor.getString(cursor
 					.getColumnIndexOrThrow(DatabaseHandler.KEY_ID));
 			contactView.append("ID: ");
@@ -49,7 +48,7 @@ public class SecondActivity extends Activity {
 		return true;
 	}
 
-	private Cursor getContact() {
+	private Cursor getContacts() {
 
 		// Run query
 		Log.d("Second Activity", "getContacts");
@@ -66,7 +65,7 @@ public class SecondActivity extends Activity {
 				selectionArgs, sortOrder);
 	}
 
-	private Uri insertContact(int id, String name, String address) {
+	private Uri insertContacts(int id, String name, String address) {
 
 		// Run query
 		Log.d("Second Activity", "insert Contacts");
@@ -81,16 +80,16 @@ public class SecondActivity extends Activity {
 		// Return all rows
 		return cr.insert(MyContentProvider.CONTENT_URI, newValues);
 	}
-
-	private void deleteContact(int id) {
-		Log.d("Second Activity", "delete Contacts");
-		// Specify a where clause that determines which row(s) to delete.
-		// Specify where arguments as necessary.
-		String whereArgs[] = null;
-		// Get the Content Resolver.
-		ContentResolver cr = getContentResolver();
-		// Delete the matching rows
-		Log.d("Second Activity", "insert Contacts done");
-		cr.delete(MyContentProvider.CONTENT_URI, DatabaseHandler.KEY_ID + "=" + id, whereArgs);
+	
+	private void deleteContact(int id)
+	{
+	// Specify a where clause that determines which row(s) to delete.
+	// Specify where arguments as necessary.
+	String whereArgs[] = null;
+	// Get the Content Resolver.
+	ContentResolver cr = getContentResolver();
+	// Delete the matching rows
+	int deletedRowCount =
+	cr.delete(MyContentProvider.CONTENT_URI, id + "=" + 0);
 	}
 }

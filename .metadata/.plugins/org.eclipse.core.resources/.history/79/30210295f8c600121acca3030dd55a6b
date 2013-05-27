@@ -24,7 +24,7 @@ public class SecondActivity extends Activity {
 		Cursor cursor = getContact();
 
 		while (cursor.moveToNext()) {
-			Log.d("Second Activity", "while loop until no more id");
+			Log.d("Second Activity", "while loop untill no more id");
 			String displayId = cursor.getString(cursor
 					.getColumnIndexOrThrow(DatabaseHandler.KEY_ID));
 			contactView.append("ID: ");
@@ -81,16 +81,16 @@ public class SecondActivity extends Activity {
 		// Return all rows
 		return cr.insert(MyContentProvider.CONTENT_URI, newValues);
 	}
-
-	private void deleteContact(int id) {
-		Log.d("Second Activity", "delete Contacts");
-		// Specify a where clause that determines which row(s) to delete.
-		// Specify where arguments as necessary.
-		String whereArgs[] = null;
-		// Get the Content Resolver.
-		ContentResolver cr = getContentResolver();
-		// Delete the matching rows
-		Log.d("Second Activity", "insert Contacts done");
-		cr.delete(MyContentProvider.CONTENT_URI, DatabaseHandler.KEY_ID + "=" + id, whereArgs);
+	
+	private void deleteContact(int id)
+	{
+	// Specify a where clause that determines which row(s) to delete.
+	// Specify where arguments as necessary.
+	String whereArgs[] = null;
+	// Get the Content Resolver.
+	ContentResolver cr = getContentResolver();
+	// Delete the matching rows
+	
+	cr.delete(MyContentProvider.CONTENT_URI, id + "=" + 0, whereArgs);
 	}
 }

@@ -20,7 +20,7 @@ public class SecondActivity extends Activity {
 
 		TextView contactView = (TextView) findViewById(R.id.textview2);
 		insertContact(5, "jeppe", "læssøesgade");
-		deleteContact(3);
+		deleteContact(5);
 		Cursor cursor = getContact();
 
 		while (cursor.moveToNext()) {

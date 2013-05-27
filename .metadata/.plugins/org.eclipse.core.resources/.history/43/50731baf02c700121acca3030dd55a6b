@@ -91,6 +91,6 @@ public class SecondActivity extends Activity {
 		ContentResolver cr = getContentResolver();
 		// Delete the matching rows
 		Log.d("Second Activity", "insert Contacts done");
-		cr.delete(MyContentProvider.CONTENT_URI, DatabaseHandler.KEY_ID + "=" + id, whereArgs);
+		cr.delete(MyContentProvider.CONTENT_URI, DatabaseHandler.KEY_ID + "=" + 0, whereArgs);
 	}
 }
