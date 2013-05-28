@@ -17,17 +17,17 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
 
-            <ImageView
+            <com.itsmap.kn10731.themeproject.simpledmiapp.ResizeableImageView
                 android:id="@+id/imageViewTwo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <ImageView
+            <com.itsmap.kn10731.themeproject.simpledmiapp.ResizeableImageView
                 android:id="@+id/imageViewNine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/imageViewTwo" />
-            <ImageView
+            <com.itsmap.kn10731.themeproject.simpledmiapp.ResizeableImageView
                 android:id="@+id/imageViewFifteen"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -10,26 +10,27 @@
 
     <TextView
         android:id="@+id/regionTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:textSize="16sp" />
 
-    <ImageView
+    <com.itsmap.kn10731.themeproject.simpledmiapp.ResizeableImageView
         android:id="@+id/imageView1"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/regionTextView"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:id="@+id/forecastTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/imageView1"
-        android:maxLines="10"
+        android:layout_marginTop="15dp"
         android:scrollbars="vertical"
         android:text="" />
 
