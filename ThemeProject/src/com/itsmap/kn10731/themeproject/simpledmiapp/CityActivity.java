@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.Window;
 import android.widget.ImageView;
 
 public class CityActivity extends Activity {
@@ -27,7 +28,8 @@ public class CityActivity extends Activity {
 		Log.d(TAG, "Oncreate");
 		mDMIApplication = (DMIApplication) this.getApplicationContext();
 		super.onCreate(savedInstanceState);
-
+		
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_city);
 
 		if (MainActivity.tmpFile != null) {

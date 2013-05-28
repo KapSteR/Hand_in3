@@ -44,4 +44,9 @@
     <string name="text_kbh">kbhnsj</string>
     <string name="text_born">bornholm</string>
     <string name="region">Regional vejrudsigt for</string>
+    <string name="title_activity_preferences">Usersettings</string>
+    <string name="pref_uncertainty">pref_uncertainty</string>
+    <string name="pref_uncertainty_title">Show uncertainty</string>
+    <string name="pref_gps_on_off">pref_gps_on_off</string>
+    <string name="pref_gps_on_off_title">Use GPS for location</string>
 </resources>

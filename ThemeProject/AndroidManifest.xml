@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:name=".DMIApplication"
+        android:name="com.itsmap.kn10731.themeproject.simpledmiapp.DMIApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -31,14 +31,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.itsmap.kn10731.themeproject.simpledmiapp.RegionActivity"
-            android:label="@string/title_activity_region" >
-        </activity>
-        <activity
             android:name="com.itsmap.kn10731.themeproject.simpledmiapp.CityActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_city"
             android:theme="@style/FullscreenTheme" >
+        </activity>
+        <activity
+            android:name="com.itsmap.kn10731.themeproject.simpledmiapp.PreferencesActivity"
+            android:label="@string/title_activity_preferences" >
         </activity>
 
         <service

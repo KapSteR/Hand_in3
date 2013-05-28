@@ -31,12 +31,14 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -59,7 +61,6 @@ public class DownloadService extends Service {
 	protected LocationManager locationManager;
 	private boolean isGPSEnabled = false;
 	private boolean isNetworkEnabled = false;
-	private boolean canGetLocation = false;
 	private Location location;
 
 	public Position position = new Position(this);
@@ -77,6 +78,9 @@ public class DownloadService extends Service {
 				Log.d(TAG, "Activity: "
 						+ currentActivity.getComponentName().getClassName());
 
+				// Usersettings
+				SharedPreferences sharedPrefs = PreferenceManager
+						.getDefaultSharedPreferences(getApplication());
 				// TODO: set default parameters
 
 				String latitude = String.valueOf(location.getLatitude());
@@ -121,26 +125,32 @@ public class DownloadService extends Service {
 				}
 
 				String postalCode = position.getPostCode();
-				if (postalCode != null) {
-					// TODO: Change 'true' to setting..
-					downloadAndSaveCityBitmaps(postalCode, true);
-					currentActivity = ((DMIApplication) getApplicationContext())
-							.getCurrentActivity();
-					if (currentActivity.getClass().equals(MainActivity.class)) {
-						Log.d(TAG, "Current activity is MainActivity");
-						Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
-						intent.putExtra(INDEX, INDEX_CITY);
-						LocalBroadcastManager.getInstance(getBaseContext())
-								.sendBroadcast(intent);
-					} else if (currentActivity.getClass().equals(
-							CityActivity.class)) {
-						Log.d(TAG, "Current activity is CityActivity");
-						Intent intent = new Intent(BROADCAST_RECEIVER_CITY);
-						LocalBroadcastManager.getInstance(getBaseContext())
-								.sendBroadcast(intent);
-					}
-				} else {
-					Log.d(TAG, "postalCode not set!");
+				if (postalCode == null) {
+					Log.d(TAG, "postalCode is not set");
+					return;
+				}
+				downloadAndSaveCityBitmaps(postalCode, sharedPrefs.getBoolean(
+						getString(R.string.pref_uncertainty), true));
+
+				currentActivity = ((DMIApplication) getApplicationContext())
+						.getCurrentActivity();
+
+				if (currentActivity == null) {
+					Log.d(TAG, "currentActivity is not set");
+					return;
+				}
+				if (currentActivity.getClass().equals(MainActivity.class)) {
+					Log.d(TAG, "Current activity is MainActivity");
+					Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
+					intent.putExtra(INDEX, INDEX_CITY);
+					LocalBroadcastManager.getInstance(getBaseContext())
+							.sendBroadcast(intent);
+				} else if (currentActivity.getClass()
+						.equals(CityActivity.class)) {
+					Log.d(TAG, "Current activity is CityActivity");
+					Intent intent = new Intent(BROADCAST_RECEIVER_CITY);
+					LocalBroadcastManager.getInstance(getBaseContext())
+							.sendBroadcast(intent);
 				}
 			}
 		}
@@ -375,6 +385,12 @@ public class DownloadService extends Service {
 	private Location getLocation() {
 		// Get the location manager
 		try {
+			SharedPreferences sharedPrefs = PreferenceManager
+					.getDefaultSharedPreferences(getApplication());
+
+			boolean useGPS = sharedPrefs.getBoolean(
+					getString(R.string.pref_gps_on_off), true);
+
 			locationManager = (LocationManager) getApplicationContext()
 					.getSystemService(LOCATION_SERVICE);
 
@@ -387,9 +403,8 @@ public class DownloadService extends Service {
 					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
 			if (!isGPSEnabled && !isNetworkEnabled) {
-				// no network provider is enabled
+				// TODO: no network provider is enabled
 			} else {
-				this.canGetLocation = true;
 				// First get location from Network Provider
 				if (isNetworkEnabled) {
 					if (locationManager != null) {
@@ -399,7 +414,7 @@ public class DownloadService extends Service {
 					}
 				}
 				// if GPS Enabled get location using GPS Services
-				if (isGPSEnabled) {
+				if (isGPSEnabled && useGPS) {
 					if (location == null) {
 						Log.d("GPS Enabled", "GPS Enabled");
 						if (locationManager != null) {
@@ -410,8 +425,6 @@ public class DownloadService extends Service {
 					}
 				}
 			}
-			// TODO: if canGetLocation == false..
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -440,9 +453,16 @@ public class DownloadService extends Service {
 			public void run() {
 				try {
 					downloadTask.run();
+				} catch (Exception e) {
+					Log.d(TAG, e.toString());
 				} finally {
-					Log.d(TAG, "DownloadService stopped.");
-					stopSelf();
+					if (downloadTask != null) {
+						stopSelf();
+						Log.d(TAG, "DownloadService stopped.");
+					} else {
+						Log.d(TAG, "downloadTask is null!");
+					}
+
 				}
 			}
 		};

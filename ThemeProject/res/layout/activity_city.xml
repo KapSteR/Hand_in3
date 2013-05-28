@@ -7,8 +7,9 @@
 
     <ScrollView
         android:id="@+id/scrollviewCity"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true" 
         android:background="@android:color/white">
 
         <RelativeLayout
@@ -18,17 +19,17 @@
 
             <ImageView
                 android:id="@+id/imageViewTwo"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <ImageView
                 android:id="@+id/imageViewNine"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/imageViewTwo" />
             <ImageView
                 android:id="@+id/imageViewFifteen"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/imageViewNine" />
         </RelativeLayout>

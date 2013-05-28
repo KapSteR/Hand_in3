@@ -37,7 +37,5 @@ public class RegionFragment extends Fragment {
 		TextView regionTextView = (TextView) getView().findViewById(
 				R.id.regionTextView);
 		regionTextView.setText(getString(R.string.region) + " " + region);
-		
-		
 	}
 }
