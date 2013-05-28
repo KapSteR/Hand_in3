@@ -49,4 +49,6 @@
     <string name="pref_uncertainty_title">Show uncertainty</string>
     <string name="pref_gps_on_off">pref_gps_on_off</string>
     <string name="pref_gps_on_off_title">Use GPS for location</string>
+    <string name="pref_use_location">pref_use_location</string>
+    <string name="pref_use_location_title">Use current location</string>
 </resources>
