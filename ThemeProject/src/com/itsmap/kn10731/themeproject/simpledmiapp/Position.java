@@ -44,7 +44,7 @@ public class Position {
 	public void setPostCode(String postCode) {
 		
 		int postInt = Integer.valueOf(postCode);
-		String temp = null;
+		String temp = postCode;
 		   
 		if (postInt < 1800)
 			temp = "1000";

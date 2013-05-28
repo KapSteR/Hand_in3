@@ -51,4 +51,7 @@
     <string name="pref_gps_on_off_title">Use GPS for location</string>
     <string name="pref_use_location">pref_use_location</string>
     <string name="pref_use_location_title">Use current location</string>
+    <string name="pref_default_city">pref_default_city</string>
+    <string name="pref_default_city_title">Enter postal code</string>
+    <string name="pref_default_city_summary">Choose default city</string>
 </resources>

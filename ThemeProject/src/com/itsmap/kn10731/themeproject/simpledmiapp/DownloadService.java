@@ -72,86 +72,104 @@ public class DownloadService extends Service {
 		public void run() {
 			if (location != null) {
 
-				Activity currentActivity = ((DMIApplication) getApplicationContext())
-						.getCurrentActivity();
-
-				Log.d(TAG, "Activity: "
-						+ currentActivity.getComponentName().getClassName());
-
 				// Usersettings
 				SharedPreferences sharedPrefs = PreferenceManager
 						.getDefaultSharedPreferences(getApplication());
 				// TODO: set default parameters
 
-				String latitude = String.valueOf(location.getLatitude());
-				String longitude = String.valueOf(location.getLongitude());
+				boolean useCurrentLocation = sharedPrefs.getBoolean(
+						getString(R.string.pref_use_location), true);
 
-				// Get data for Region
-				JSONObject jObject = getGeoData(latitude, longitude,
-						POLICE_COMMUNITY);
-				if (jObject != null) {
-					parseRegion(jObject);
-				}
-
-				if (position.getRegion() != null) {
-					String foreCastText;
-					Bitmap forecastBitmap;
-
-					foreCastText = getTextForecast(position.getTextName());
-					if (foreCastText == null) {
-						foreCastText = getString(R.string.forecastTextError);
-					}
-
-					forecastBitmap = downlaodBitmap("http://www.dmi.dk/dmi/femdgn_"
-							+ position.getPngName() + ".png");
-					if (forecastBitmap == null) {
-						Log.d(TAG, "Bitmap is null");
-					}
-
-					Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
-					intent.putExtra(REGION, position.getRegion());
-					intent.putExtra(FORECAST_TEXT, foreCastText);
-					intent.putExtra(FORECAST_BITMAP, forecastBitmap);
-					intent.putExtra(INDEX, INDEX_REGION);
-					LocalBroadcastManager.getInstance(getBaseContext())
-							.sendBroadcast(intent);
+				if (!useCurrentLocation) {
+					position.setPostCode(sharedPrefs.getString(
+							getString(R.string.pref_default_city), "-1"));
+					Log.d(TAG,sharedPrefs.getString(
+							getString(R.string.pref_default_city),"default"));
 				} else {
-					Log.d(TAG, "region is null");
+
+					String latitude = String.valueOf(location.getLatitude());
+					String longitude = String.valueOf(location.getLongitude());
+
+					// Get data for Region
+					JSONObject jObject = getGeoData(latitude, longitude,
+							POLICE_COMMUNITY);
+					if (jObject != null) {
+						parseRegion(jObject);
+					}
+					
+					downloadRegionInfo();
+
+					jObject = getGeoData(latitude, longitude, POSTAL_CODE);
+					if (jObject != null) {
+						parsePostalCode(jObject);
+					}
+				}
+				downloadCityInfo();
+			}
+		}
+
+		private void downloadCityInfo() {
+			String postalCode = position.getPostCode();
+			if (postalCode == null) {
+				Log.d(TAG, "postalCode is not set");
+				return;
+			}
+
+			downloadAndSaveCityBitmaps(
+					postalCode,
+					PreferenceManager.getDefaultSharedPreferences(
+							getApplication()).getBoolean(
+							getString(R.string.pref_uncertainty), true));
+
+			Activity currentActivity = ((DMIApplication) getApplicationContext())
+					.getCurrentActivity();
+
+			if (currentActivity == null) {
+				Log.d(TAG, "currentActivity is not set");
+				return;
+			}
+			Log.d(TAG, "Activity: "
+					+ currentActivity.getComponentName().getClassName());
+
+			if (currentActivity.getClass().equals(MainActivity.class)) {
+				Log.d(TAG, "Current activity is MainActivity");
+				Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
+				intent.putExtra(INDEX, INDEX_CITY);
+				LocalBroadcastManager.getInstance(getBaseContext())
+						.sendBroadcast(intent);
+			} else if (currentActivity.getClass().equals(CityActivity.class)) {
+				Log.d(TAG, "Current activity is CityActivity");
+				Intent intent = new Intent(BROADCAST_RECEIVER_CITY);
+				LocalBroadcastManager.getInstance(getBaseContext())
+						.sendBroadcast(intent);
+			}
+		}
+
+		private void downloadRegionInfo() {
+			if (position.getRegion() != null) {
+				String foreCastText;
+				Bitmap forecastBitmap;
+
+				foreCastText = getTextForecast(position.getTextName());
+				if (foreCastText == null) {
+					foreCastText = getString(R.string.forecastTextError);
 				}
 
-				jObject = getGeoData(latitude, longitude, POSTAL_CODE);
-				if (jObject != null) {
-					parsePostalCode(jObject);
+				forecastBitmap = downlaodBitmap("http://www.dmi.dk/dmi/femdgn_"
+						+ position.getPngName() + ".png");
+				if (forecastBitmap == null) {
+					Log.d(TAG, "Bitmap is null");
 				}
 
-				String postalCode = position.getPostCode();
-				if (postalCode == null) {
-					Log.d(TAG, "postalCode is not set");
-					return;
-				}
-				downloadAndSaveCityBitmaps(postalCode, sharedPrefs.getBoolean(
-						getString(R.string.pref_uncertainty), true));
-
-				currentActivity = ((DMIApplication) getApplicationContext())
-						.getCurrentActivity();
-
-				if (currentActivity == null) {
-					Log.d(TAG, "currentActivity is not set");
-					return;
-				}
-				if (currentActivity.getClass().equals(MainActivity.class)) {
-					Log.d(TAG, "Current activity is MainActivity");
-					Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
-					intent.putExtra(INDEX, INDEX_CITY);
-					LocalBroadcastManager.getInstance(getBaseContext())
-							.sendBroadcast(intent);
-				} else if (currentActivity.getClass()
-						.equals(CityActivity.class)) {
-					Log.d(TAG, "Current activity is CityActivity");
-					Intent intent = new Intent(BROADCAST_RECEIVER_CITY);
-					LocalBroadcastManager.getInstance(getBaseContext())
-							.sendBroadcast(intent);
-				}
+				Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
+				intent.putExtra(REGION, position.getRegion());
+				intent.putExtra(FORECAST_TEXT, foreCastText);
+				intent.putExtra(FORECAST_BITMAP, forecastBitmap);
+				intent.putExtra(INDEX, INDEX_REGION);
+				LocalBroadcastManager.getInstance(getBaseContext())
+						.sendBroadcast(intent);
+			} else {
+				Log.d(TAG, "region is null");
 			}
 		}
 
