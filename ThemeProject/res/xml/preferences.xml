@@ -20,4 +20,11 @@
         android:summary="@string/pref_default_city_summary"
         android:title="@string/pref_default_city_title" />
 
+    <ListPreference
+        android:entries="@array/pref_region_names"
+        android:entryValues="@array/pref_region_values"
+        android:key="@string/pref_default_region"
+        android:title="@string/pref_default_region_title" 
+        android:summary="@string/pref_default_region_summary"/>
+
 </PreferenceScreen>

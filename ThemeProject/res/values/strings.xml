@@ -14,8 +14,8 @@
     <string name="title_activity_region_fragment">RegionFragment</string>
     <string name="forecastTextError">Forecast text could not be retreived.</string>
     <string name="title_activity_city">CityActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="region">Regional vejrudsigt for</string>
+    <string name="title_activity_preferences">Usersettings</string>
     <!-- Real region names -->
     <string name="nordj">Nordjylland</string>
     <string name="midtj">Midt og Vestjylland</string>
@@ -43,8 +43,7 @@
     <string name="text_vestsj">vssjlol</string>
     <string name="text_kbh">kbhnsj</string>
     <string name="text_born">bornholm</string>
-    <string name="region">Regional vejrudsigt for</string>
-    <string name="title_activity_preferences">Usersettings</string>
+    <!-- Preferences text -->
     <string name="pref_uncertainty">pref_uncertainty</string>
     <string name="pref_uncertainty_title">Show uncertainty</string>
     <string name="pref_gps_on_off">pref_gps_on_off</string>
@@ -54,4 +53,7 @@
     <string name="pref_default_city">pref_default_city</string>
     <string name="pref_default_city_title">Enter postal code</string>
     <string name="pref_default_city_summary">Choose default city</string>
+    <string name="pref_default_region">pref_default_region</string>
+    <string name="pref_default_region_title">Enter region</string>
+    <string name="pref_default_region_summary">Choose default region</string>
 </resources>

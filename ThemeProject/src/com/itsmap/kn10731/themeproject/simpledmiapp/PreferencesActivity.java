@@ -18,6 +18,7 @@ public class PreferencesActivity extends PreferenceActivity implements
 		Log.d(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+		updateCityPreference(getString(R.string.pref_use_location));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -40,8 +41,12 @@ public class PreferencesActivity extends PreferenceActivity implements
 						(OnSharedPreferenceChangeListener) this);
 	}
 
-	@SuppressWarnings("deprecation")
 	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+		updateCityPreference(key);
+	}
+
+	@SuppressWarnings("deprecation")
+	private void updateCityPreference(String key) {
 		SharedPreferences sharedPrefs = PreferenceManager
 				.getDefaultSharedPreferences(getBaseContext());
 
@@ -51,18 +56,13 @@ public class PreferencesActivity extends PreferenceActivity implements
 					false)) {
 				findPreference(getString(R.string.pref_default_city))
 						.setEnabled(false);
+				findPreference(getString(R.string.pref_default_region))
+						.setEnabled(false);
 			} else {
 				findPreference(getString(R.string.pref_default_city))
 						.setEnabled(true);
-			}
-		} else if (key.equals(getString(R.string.pref_default_city))) {
-			int postalCode;
-			
-			try{
-				postalCode = Integer.parseInt(sharedPrefs.getString(
-					getString(R.string.pref_default_city), "-1"));
-			} catch (Exception e) {
-				Log.d(TAG,e.toString());
+				findPreference(getString(R.string.pref_default_region))
+						.setEnabled(true);
 			}
 		}
 	}

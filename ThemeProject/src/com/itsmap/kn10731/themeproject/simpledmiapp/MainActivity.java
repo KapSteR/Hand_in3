@@ -8,12 +8,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -47,10 +45,11 @@ public class MainActivity extends FragmentActivity {
 				RegionFragment regionFragment = (RegionFragment) fragMang
 						.findFragmentByTag("regionFragment");
 
-				regionFragment.setTextVievs(intent.getExtras().getString(
-						DownloadService.FORECAST_TEXT),intent.getExtras().getString(
-								DownloadService.REGION));
-				
+				regionFragment.setTextVievs(
+						intent.getExtras().getString(
+								DownloadService.FORECAST_TEXT), intent
+								.getExtras().getString(DownloadService.REGION));
+
 				regionFragment.setRegionBitmap((Bitmap) intent
 						.getParcelableExtra(DownloadService.FORECAST_BITMAP));
 				fragMang.executePendingTransactions();
@@ -115,8 +114,8 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent i = new Intent(this, PreferencesActivity.class);
-        startActivityForResult(i, 0);
+		Intent intent = new Intent(this, PreferencesActivity.class);
+		startActivity(intent);
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -159,7 +158,7 @@ public class MainActivity extends FragmentActivity {
 			stopService(intent);
 			startService(intent);
 		}
-		
+
 		super.onResume();
 	}
 
@@ -177,7 +176,6 @@ public class MainActivity extends FragmentActivity {
 				// emailIntent.putExtra(Intent.EXTRA_SUBJECT, "EXTRA_SUBJECT");
 				startActivity(Intent
 						.createChooser(emailIntent, "Send email..."));
-
 			}
 		});
 	}

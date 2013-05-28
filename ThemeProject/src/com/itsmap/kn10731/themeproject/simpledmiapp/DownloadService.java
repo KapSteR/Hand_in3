@@ -75,7 +75,6 @@ public class DownloadService extends Service {
 				// Usersettings
 				SharedPreferences sharedPrefs = PreferenceManager
 						.getDefaultSharedPreferences(getApplication());
-				// TODO: set default parameters
 
 				boolean useCurrentLocation = sharedPrefs.getBoolean(
 						getString(R.string.pref_use_location), true);
@@ -83,8 +82,10 @@ public class DownloadService extends Service {
 				if (!useCurrentLocation) {
 					position.setPostCode(sharedPrefs.getString(
 							getString(R.string.pref_default_city), "-1"));
-					Log.d(TAG,sharedPrefs.getString(
-							getString(R.string.pref_default_city),"default"));
+					position.setRegion(Integer.valueOf(sharedPrefs.getString(
+							getString(R.string.pref_default_region), "-1")));
+					Log.d(TAG, sharedPrefs.getString(
+							getString(R.string.pref_default_city), "default"));
 				} else {
 
 					String latitude = String.valueOf(location.getLatitude());
@@ -96,14 +97,13 @@ public class DownloadService extends Service {
 					if (jObject != null) {
 						parseRegion(jObject);
 					}
-					
-					downloadRegionInfo();
 
 					jObject = getGeoData(latitude, longitude, POSTAL_CODE);
 					if (jObject != null) {
 						parsePostalCode(jObject);
 					}
 				}
+				downloadRegionInfo();
 				downloadCityInfo();
 			}
 		}
@@ -169,7 +169,7 @@ public class DownloadService extends Service {
 				LocalBroadcastManager.getInstance(getBaseContext())
 						.sendBroadcast(intent);
 			} else {
-				Log.d(TAG, "region is null");
+				Log.d(TAG, "region is null or empty.");
 			}
 		}
 
@@ -235,6 +235,8 @@ public class DownloadService extends Service {
 				}
 				builder.append(reader.readLine().trim()); // Line 678 is the
 															// weather Forecast
+				builder.append(reader.readLine().trim()); // Or line 679 is the
+															// weather Forecast
 
 			} catch (UnsupportedEncodingException e) {
 				Log.d(TAG, e.toString());
@@ -248,14 +250,12 @@ public class DownloadService extends Service {
 						Log.d(TAG, e.toString());
 					}
 			}
-
 			try {
 				String start = "<td class=\"broedtekst\"><td>";
 				String end = "</td>";
 				String part = builder.substring(builder.indexOf(start)
 						+ start.length() + 1);
 				String question = part.substring(0, part.indexOf(end));
-				Log.d(TAG, question);
 
 				return question;
 
@@ -315,7 +315,6 @@ public class DownloadService extends Service {
 			DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
 			HttpGet getMethod = new HttpGet(myURI);
 			// Depends on your web service
-			Log.d(TAG, myURI.getPath());
 
 			InputStream inputStream = null;
 			String result = null;
@@ -329,7 +328,7 @@ public class DownloadService extends Service {
 			} catch (IOException e) {
 				Log.d(TAG, e.toString());
 			}
-			Log.d(TAG, "http response received");
+
 			if (response == null) {
 				Log.d(TAG, "HttpResponse is null");
 				// TODO: Internet connection must be enabled!!
@@ -381,8 +380,6 @@ public class DownloadService extends Service {
 			try {
 				position.setCity(jObject.getString("navn"));
 				position.setPostCode(jObject.getString("fra"));
-				Log.d(TAG, "By: " + position.getCity() + ". Postnr: "
-						+ position.getPostCode());
 			} catch (JSONException e) {
 			}
 		}
@@ -393,10 +390,7 @@ public class DownloadService extends Service {
 				index = Integer.parseInt(jObject.getString("nr"));
 			} catch (JSONException e) {
 			}
-
 			position.setRegion(index);
-
-			Log.d(TAG, "Region: " + position.getRegion());
 		}
 	};
 

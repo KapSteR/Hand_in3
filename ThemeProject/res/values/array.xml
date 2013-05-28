@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Values and names must correspond according to Position.class!!! -->
+    <string-array name="pref_region_names">
+        <item>Nordjylland</item>
+        <item>Midt og Vestjylland</item>
+        <item>Østjylland</item>
+        <item>Syd og Sønderjylland</item>
+        <item>Fyn</item>
+        <item>Vestsjælland og Lolland-Falster</item>
+        <item>København og Nordsjælland</item>
+        <item>Bornholm</item>
+    </string-array>
+    <string-array name="pref_region_values">
+        <item>1</item>
+        <item>3</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>7</item>
+        <item>9</item>
+        <item>12</item>
+    </string-array>
+
+</resources>
