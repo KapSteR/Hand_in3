@@ -25,8 +25,8 @@ public class MainActivity extends ListActivity {
 
 		// Inserting Costumers
 		Log.d("Main Activity ", "Inserting ..");
-		db.addCostumer(new Costumer(0, "Rene", "10783"));
-		db.addCostumer(new Costumer(1, "Kapster", "1337"));
+		db.addCostumer(new Costumer(0, "Ravi", "9100000000"));
+		db.addCostumer(new Costumer(1, "Srinivas", "9199999999"));
 		db.addCostumer(new Costumer(2, "Tommy", "9522222222"));
 		db.addCostumer(new Costumer(3, "Lolface", "37708"));
 
