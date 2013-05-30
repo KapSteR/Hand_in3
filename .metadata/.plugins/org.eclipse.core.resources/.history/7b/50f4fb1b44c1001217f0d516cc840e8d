@@ -1,0 +1,78 @@
+package iha.smap.jno10695.hand_in5;
+
+import java.util.List;
+
+import android.app.ListActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.View;
+import android.widget.ArrayAdapter;
+
+public class MainActivity extends ListActivity {
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		DatabaseHandler db = new DatabaseHandler(this);
+		List<Costumer> values = db.getAllCostumers();
+		ArrayAdapter<Costumer> adapter = new ArrayAdapter<Costumer>(this,
+				android.R.layout.simple_list_item_1, values);
+		setListAdapter(adapter);
+		Costumer costumer = null;
+		adapter.add("something");
+		// Inserting Costumers
+		Log.d("Insert: ", "Inserting ..");
+		db.addCostumer(new Costumer(1, "Ravi", "9100000000"));
+		db.addCostumer(new Costumer(2, "Srinivas", "9199999999"));
+		db.addCostumer(new Costumer(3, "Tommy", "9522222222"));
+		db.addCostumer(new Costumer(4, "Karthik", "9533333333"));
+		/*
+		// Reading all costumers
+		Log.d("Reading: ", "Reading all costumers..");
+		List<Costumer> costumers = db.getAllCostumers();
+
+		for (Costumer cn : costumers) {
+			String log = "Id: " + cn.getID() + " ,Name: " + cn.getName()
+					+ " ,Phone: " + cn.getAddress();
+			// Writing costumers to log
+			Log.d("Name: ", log);
+			
+
+		}
+		*/
+	}
+
+	@SuppressWarnings("unchecked")
+	public void onClick(View view) {
+		DatabaseHandler db = new DatabaseHandler(this);
+		ArrayAdapter<Costumer> adapter = (ArrayAdapter<Costumer>) getListAdapter();
+		Costumer costumer = null;
+		switch (view.getId()) {
+		case R.id.add:
+			// Save the new comment to the database
+			db.addCostumer(new Costumer(5, "BobMarley", "123456789"));
+			adapter.add(costumer);
+			break;
+		case R.id.delete:
+			if (getListAdapter().getCount() > 0) {
+				costumer = (Costumer) getListAdapter().getItem(0);
+				db.deletecostumer(costumer);
+				adapter.remove(costumer);
+			}
+			break;
+		}
+		adapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+}

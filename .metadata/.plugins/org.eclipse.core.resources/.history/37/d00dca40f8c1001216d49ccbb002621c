@@ -1,0 +1,95 @@
+package iha.smap.jno10695.hand_in5;
+
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
+
+public class ContentProvider extends android.content.ContentProvider {
+	
+	private DatabaseHandler db;
+
+	public static final Uri AUTHORITY = Uri
+			.parse("content://iha.smap.jno10695.hand_in5.contentprovider");
+
+	// ** Using the UriMatcher to handle single or multiple query requests
+	// Create the constants used to differentiate between the different URI
+	// requests.
+	private static final int ALLROWS = 1;
+	private static final int SINGLE_ROW = 2;
+	private static final UriMatcher uriMatcher;
+	// Populate the UriMatcher object, where a URI ending in 'items' will
+	// correspond to a request for all items, and 'items/[rowID]'
+	// represents a single row.
+	static {
+		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+		uriMatcher.addURI("dk.iha.itsmap.themeapp.mycontentprovider", "items",
+				ALLROWS);
+		uriMatcher.addURI("dk.iha.itsmap.themeapp.mycontentprovider",
+				"items/#", SINGLE_ROW);
+	}
+
+	@Override
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getType(Uri uri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Uri insert(Uri uri, ContentValues values) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean onCreate() {
+	    db = new DatabaseHandler(getContext());
+	    return false;
+	}
+
+	@Override
+	public Cursor query(Uri uri, String[] projection, String selection,
+			String[] selectionArgs, String sortOrder) {
+		// SQLiteQueryBuilder is a helper class that creates the
+        // proper SQL syntax for us.
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        // Set the table we're querying.
+        qb.setTables(DATABASE_TABLE_NAME);
+
+        // If the query ends in a specific record number, we're
+        // being asked for a specific record, so set the
+        // WHERE clause in our query.
+        if((uriMatcher.match(uri)) == SINGLE_ROW){
+            qb.appendWhere("_id=" + uri.getPath());
+        }
+
+        // Make the query.
+        Cursor c = qb.query(
+                projection,
+                selection,
+                selectionArgs,
+                sortOrder,
+                null,
+                null,
+                null,
+                null);
+        c.setNotificationUri(getContext().getContentResolver(), uri);
+        return c;
+	}
+
+	@Override
+	public int update(Uri uri, ContentValues values, String selection,
+			String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

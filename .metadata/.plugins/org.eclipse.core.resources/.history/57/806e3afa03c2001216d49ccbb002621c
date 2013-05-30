@@ -1,0 +1,87 @@
+package iha.smap.jno10695.hand_in5;
+
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.net.Uri;
+
+public class ContentProvider extends android.content.ContentProvider {
+
+	private static final String AUTHORITY = "iha.smap.jno10695.hand_in5";
+
+	private static final String BASE_PATH = "items";
+	public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
+			+ "/" + BASE_PATH);
+
+	// ** Using the UriMatcher to handle single or multiple query requests
+	// Create the constants used to differentiate between the different URI
+	// requests.
+	private static final int ALLROWS = 1;
+	private static final int SINGLE_ROW = 2;
+	private static final UriMatcher uriMatcher;
+	// Populate the UriMatcher object, where a URI ending in 'items' will
+	// correspond to a request for all items, and 'items/[rowID]'
+	// represents a single row.
+	static {
+		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+		uriMatcher.addURI(AUTHORITY, "items",
+				ALLROWS);
+		uriMatcher.addURI(AUTHORITY,
+				"items/#", SINGLE_ROW);
+	}
+
+	@Override
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		switch (uriMatcher.match(uri)) {
+		case ALLROWS:
+			return 0; // return rows deleted
+		case SINGLE_ROW:
+			return 0; // return rows deleted
+		default:
+			throw new IllegalArgumentException("Unsupported URI:" + uri);
+		}
+	}
+
+	@Override
+	public String getType(Uri uri) {
+		switch (uriMatcher.match(uri)) {
+		case ALLROWS:
+			return "vnd.android.cursor.dir/myprovidercontent";
+		case SINGLE_ROW:
+			return "vnd.android.cursor.item/myprovidercontent";
+		default:
+			throw new IllegalArgumentException("Unsupported URI: " + uri);
+		}
+	}
+
+	@Override
+	public Uri insert(Uri uri, ContentValues values) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean onCreate() {
+		return false;
+	}
+
+	@Override
+	public Cursor query(Uri uri, String[] projection, String selection,
+			String[] selectionArgs, String sortOrder) {
+		// If this is a row query, limit the result set to the passed in row.
+		switch (uriMatcher.match(uri)) {
+		case SINGLE_ROW:
+			// TODO: Modify selection based on row id, where:
+			// rowNumber = uri.getPathSegments().get(1));
+		}
+		return null;
+	}
+
+	@Override
+	public int update(Uri uri, ContentValues values, String selection,
+			String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

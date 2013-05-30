@@ -1,2 +1,6 @@
 eclipse.preferences.version=1
-task-tag-projects-already-scanned=Hand_in3_Fragmentor
+<<<<<<< HEAD
+task-tag-projects-already-scanned=Hand_in3_Fragmentor,Hand_in4,Hand_in5,ThemeProject
+=======
+task-tag-projects-already-scanned=Hand_in3_Fragmentor,AndroidSQLiteTutorial,Hand_in4,Hand_in5
+>>>>>>> Jeppe_Hand_in5
