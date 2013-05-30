@@ -181,8 +181,6 @@ public class MainActivity extends FragmentActivity {
 				Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri
 						.fromParts("mailto", getString(R.string.mail_addr),
 								null));
-
-				// emailIntent.putExtra(Intent.EXTRA_SUBJECT, "EXTRA_SUBJECT");
 				startActivity(Intent
 						.createChooser(emailIntent, "Send email..."));
 			}
