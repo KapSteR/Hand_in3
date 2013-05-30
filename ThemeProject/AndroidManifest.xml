@@ -33,7 +33,6 @@
         <activity
             android:name="com.itsmap.kn10731.themeproject.simpledmiapp.CityActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_city"
             android:theme="@style/FullscreenTheme" >
         </activity>
         <activity

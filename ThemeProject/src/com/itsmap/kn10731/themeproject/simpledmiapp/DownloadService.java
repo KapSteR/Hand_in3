@@ -54,9 +54,6 @@ public class DownloadService extends Service {
 	public static final String NINE_DAY_BITMAP = "NineDayBitmap";
 	public static final String FIFTEEN_DAY_BITMAP = "FifteenDayBitmap";
 	public static final String REGION = "Region";
-	public static final String INDEX = "Index";
-	public static final int INDEX_REGION = 1;
-	public static final int INDEX_CITY = 2;
 
 	protected LocationManager locationManager;
 	private boolean isGPSEnabled = false;
@@ -131,13 +128,7 @@ public class DownloadService extends Service {
 			Log.d(TAG, "Activity: "
 					+ currentActivity.getComponentName().getClassName());
 
-			if (currentActivity.getClass().equals(MainActivity.class)) {
-				Log.d(TAG, "Current activity is MainActivity");
-				Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
-				intent.putExtra(INDEX, INDEX_CITY);
-				LocalBroadcastManager.getInstance(getBaseContext())
-						.sendBroadcast(intent);
-			} else if (currentActivity.getClass().equals(CityActivity.class)) {
+			if (currentActivity.getClass().equals(CityActivity.class)) {
 				Log.d(TAG, "Current activity is CityActivity");
 				Intent intent = new Intent(BROADCAST_RECEIVER_CITY);
 				LocalBroadcastManager.getInstance(getBaseContext())
@@ -165,7 +156,6 @@ public class DownloadService extends Service {
 				intent.putExtra(REGION, position.getRegion());
 				intent.putExtra(FORECAST_TEXT, foreCastText);
 				intent.putExtra(FORECAST_BITMAP, forecastBitmap);
-				intent.putExtra(INDEX, INDEX_REGION);
 				LocalBroadcastManager.getInstance(getBaseContext())
 						.sendBroadcast(intent);
 			} else {
@@ -256,12 +246,12 @@ public class DownloadService extends Service {
 				String part = builder.substring(builder.indexOf(start)
 						+ start.length() + 1);
 				String forecast = part.substring(0, part.indexOf(end));
-				
+
 				// Replace wrongly encoded nordic characters
 				forecast = forecast.replaceAll("&aelig;", "æ");
-				forecast = forecast.replaceAll("&oslash;","ø");
+				forecast = forecast.replaceAll("&oslash;", "ø");
 				forecast = forecast.replaceAll("&aring;", "å");
-				
+
 				return forecast;
 
 			} catch (Exception e) {
@@ -443,7 +433,7 @@ public class DownloadService extends Service {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.d(TAG, e.toString());
 		}
 		return location;
 	}

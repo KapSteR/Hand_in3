@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+
     <string name="app_name">Simple DMI app</string>
     <string name="action_settings">Settings</string>
     <string name="feedback">If you have any feedback, shoot us an e-mail</string>
@@ -8,12 +9,8 @@
     <string name="title_activity_region">RegionActivity</string>
     <string name="title_service_location">LocationService</string>
     <string name="refreshButton">Update location</string>
-    <string name="forecast_region">Vejrudsigt ikke opdateret</string>
-    <string name="title_activity_loading_fragment">LoadingFragment</string>
     <string name="updateButton">Update</string>
-    <string name="title_activity_region_fragment">RegionFragment</string>
     <string name="forecastTextError">Forecast text could not be retreived.</string>
-    <string name="title_activity_city">CityActivity</string>
     <string name="region">Regional vejrudsigt for</string>
     <string name="title_activity_preferences">Usersettings</string>
     <!-- Real region names -->
@@ -52,8 +49,11 @@
     <string name="pref_use_location_title">Use current location</string>
     <string name="pref_default_city">pref_default_city</string>
     <string name="pref_default_city_title">Enter postal code</string>
-    <string name="pref_default_city_summary">Choose default city</string>
+    <string name="pref_default_city_summary_choose">Choose default city</string>
+    <string name="pref_default_city_summary">Default postalcode is:</string>
     <string name="pref_default_region">pref_default_region</string>
     <string name="pref_default_region_title">Enter region</string>
-    <string name="pref_default_region_summary">Choose default region</string>
+    <string name="pref_default_region_summary">Default region is:</string>
+    <string name="pref_default_region_summary_choose">Choose default region</string>
+
 </resources>

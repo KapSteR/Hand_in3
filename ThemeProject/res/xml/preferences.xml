@@ -17,7 +17,7 @@
     <EditTextPreference
         android:inputType="number"
         android:key="@string/pref_default_city"
-        android:summary="@string/pref_default_city_summary"
+        android:summary="@string/pref_default_city_summary_choose"
         android:title="@string/pref_default_city_title" />
 
     <ListPreference
