@@ -23,12 +23,14 @@ public class RegionFragment extends Fragment {
 	}
 
 	public void setRegionBitmap(Bitmap bitmap) {
+		Log.d(TAG, "Set bitmap.");
 		ImageView imageView = (ImageView) getView().findViewById(
 				R.id.imageView1);
 		imageView.setImageBitmap(bitmap);
 	}
 
 	public void setTextVievs(String forecastText, String region) {
+		Log.d(TAG, "Set textViews: " + forecastText + " and " + region);
 		if (forecastText != null && !forecastText.equals("")) {
 			TextView forecastTextView = (TextView) getView().findViewById(
 					R.id.forecastTextView);

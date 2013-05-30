@@ -44,7 +44,7 @@ public class MainActivity extends FragmentActivity {
 			RegionFragment regionFragment = (RegionFragment) fragMang
 					.findFragmentByTag("regionFragment");
 
-			if (intent.getStringExtra(DownloadService.CONNECTION_ERROR) == null) {
+			if (intent.getStringExtra(DownloadService.CONNECTION_ERROR) != null) {
 				regionFragment.setTextVievs("Internet connection error!", "");
 			} else if (intent.getExtras().getString(DownloadService.REGION) != null) {
 				regionFragment.setTextVievs(
