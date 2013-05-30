@@ -13,9 +13,14 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
+<<<<<<< HEAD
 		<item value="Log" key="selection"/>
 		<list key="findhistory">
 			<item value="log"/>
+=======
+		<item value="Comment" key="selection"/>
+		<list key="findhistory">
+>>>>>>> Jeppe_Hand_in5
 			<item value="comment"/>
 			<item value="comments"/>
 			<item value="datasource"/>
