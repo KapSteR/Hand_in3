@@ -32,55 +32,51 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG, "Received broadcast");
+			
+			FragmentManager fragMang = getSupportFragmentManager();
+			fragMang.beginTransaction()
+					.replace(R.id.frameLayout, new RegionFragment(),
+							"regionFragment").commit();
+			fragMang.executePendingTransactions();
+			RegionFragment regionFragment = (RegionFragment) fragMang
+					.findFragmentByTag("regionFragment");
 
-			int index = intent.getExtras().getInt(DownloadService.INDEX);
-			switch (index) {
-			case DownloadService.INDEX_REGION:
-				Log.d(TAG, "Index is region");
-				FragmentManager fragMang = getSupportFragmentManager();
-				fragMang.beginTransaction()
-						.replace(R.id.frameLayout, new RegionFragment(),
-								"regionFragment").commit();
-				fragMang.executePendingTransactions();
-				RegionFragment regionFragment = (RegionFragment) fragMang
-						.findFragmentByTag("regionFragment");
+			regionFragment
+					.setTextVievs(
+							intent.getExtras().getString(
+									DownloadService.FORECAST_TEXT),
+							intent.getExtras()
+									.getString(DownloadService.REGION));
 
-				regionFragment.setTextVievs(
-						intent.getExtras().getString(
-								DownloadService.FORECAST_TEXT), intent
-								.getExtras().getString(DownloadService.REGION));
-
-				regionFragment.setRegionBitmap((Bitmap) intent
-						.getParcelableExtra(DownloadService.FORECAST_BITMAP));
-				fragMang.executePendingTransactions();
-				break;
-			case DownloadService.INDEX_CITY:
-				Log.d(TAG, "Index is city");
-				// TODO: ??
-				break;
-			default:
-				Log.d(TAG, "Index not set");
-			}
+			regionFragment.setRegionBitmap((Bitmap) intent
+					.getParcelableExtra(DownloadService.FORECAST_BITMAP));
+			fragMang.executePendingTransactions();
 		}
 	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO: check for savedInstance, and orientation.
+		// TODO: check for savedInstance
 		Log.d(TAG, "onCreateMain");
 		super.onCreate(savedInstanceState);
 		mDMIApplication = (DMIApplication) this.getApplication();
 
-		getSupportFragmentManager()
-				.beginTransaction()
-				.add(R.id.frameLayout, new LoadingFragment(), "loadingFragment")
-				.commit();
-		getSupportFragmentManager().executePendingTransactions();
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			Intent intent = new Intent(getBaseContext(), CityActivity.class);
+			Log.d(TAG, "Starting CityActivity");
+			startActivity(intent);
+		} else {
+			getSupportFragmentManager()
+					.beginTransaction()
+					.add(R.id.frameLayout, new LoadingFragment(),
+							"loadingFragment").commit();
+			getSupportFragmentManager().executePendingTransactions();
 
-		setContentView(R.layout.activity_main);
+			setContentView(R.layout.activity_main);
 
-		updateButtonClick();
-		feedbackClick();
+			updateButtonClick();
+			feedbackClick();
+		}
 
 		try {
 			tmpFile = File.createTempFile("BitmapContainer", ".tmp",
