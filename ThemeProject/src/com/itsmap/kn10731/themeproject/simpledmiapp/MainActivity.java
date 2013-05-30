@@ -35,6 +35,7 @@ public class MainActivity extends FragmentActivity {
 
 			FragmentManager fragMang = getSupportFragmentManager();
 			if (fragMang.findFragmentByTag("regionFragment") == null) {
+				Log.d(TAG, "RegionFragment is not instantiated yet.");
 				fragMang.beginTransaction()
 						.replace(R.id.frameLayout, new RegionFragment(),
 								"regionFragment").commit();
@@ -44,16 +45,27 @@ public class MainActivity extends FragmentActivity {
 			RegionFragment regionFragment = (RegionFragment) fragMang
 					.findFragmentByTag("regionFragment");
 
-			if (intent.getStringExtra(DownloadService.CONNECTION_ERROR) != null) {
-				regionFragment.setTextVievs("Internet connection error!", "");
-			} else if (intent.getExtras().getString(DownloadService.REGION) != null) {
+			if (intent
+					.getStringExtra(getString(R.string.intent_connection_error)) != null) {
+				Log.d(TAG, "Connection error.");
+				regionFragment
+						.setTextVievs(
+								"",
+								intent.getStringExtra(getString(R.string.intent_connection_error_text)));
+			} else if (intent.getExtras().getString(
+					getString(R.string.intent_region)) != null) {
+				Log.d(TAG, "intent_region is set.");
 				regionFragment.setTextVievs(
 						intent.getExtras().getString(
-								DownloadService.FORECAST_TEXT), intent
-								.getExtras().getString(DownloadService.REGION));
+								getString(R.string.intent_forecast_text)),
+						getString(R.string.region)
+								+ " "
+								+ intent.getExtras().getString(
+										getString(R.string.intent_region)));
 
-				regionFragment.setRegionBitmap((Bitmap) intent
-						.getParcelableExtra(DownloadService.FORECAST_BITMAP));
+				regionFragment
+						.setRegionBitmap((Bitmap) intent
+								.getParcelableExtra(getString(R.string.intent_forecast_bitmap)));
 			}
 			fragMang.executePendingTransactions();
 		}
@@ -147,7 +159,7 @@ public class MainActivity extends FragmentActivity {
 		mDMIApplication.setCurrentActivity(this);
 		LocalBroadcastManager.getInstance(this).registerReceiver(
 				mMessageReceiver,
-				new IntentFilter(DownloadService.BROADCAST_RECEIVER_MAIN));
+				new IntentFilter(getString(R.string.broadcast_receiver_main)));
 
 		// if forecast have not been show, restart downloadService
 		if (findViewById(R.id.progressBar1) != null) {

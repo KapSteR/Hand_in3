@@ -46,17 +46,6 @@ public class DownloadService extends Service {
 
 	private static final String TAG = "DownloadService";
 
-	public static final String BROADCAST_RECEIVER_MAIN = "com.kn10731.themeproject.simpledmiapp.downloadIntentMain";
-	public static final String BROADCAST_RECEIVER_CITY = "com.kn10731.themeproject.simpledmiapp.downloadIntentCity";
-	public static final String FORECAST_TEXT = "RegionText";
-	public static final String FORECAST_BITMAP = "RegionBitmap";
-	public static final String TWO_DAY_BITMAP = "TwoDayBitmap";
-	public static final String NINE_DAY_BITMAP = "NineDayBitmap";
-	public static final String FIFTEEN_DAY_BITMAP = "FifteenDayBitmap";
-	public static final String REGION = "Region";
-	public static final String CONNECTION_ERROR = "ConnectionError";
-	public static final String TEXT_CONNECTION_ERROR = "ConnectionError";
-
 	protected LocationManager locationManager;
 	private boolean isGPSEnabled = false;
 	private boolean isNetworkEnabled = false;
@@ -145,7 +134,8 @@ public class DownloadService extends Service {
 
 			if (currentActivity.getClass().equals(CityActivity.class)) {
 				Log.d(TAG, "Current activity is CityActivity");
-				Intent intent = new Intent(BROADCAST_RECEIVER_CITY);
+				Intent intent = new Intent(
+						getString(R.string.broadcast_receiver_city));
 				LocalBroadcastManager.getInstance(getBaseContext())
 						.sendBroadcast(intent);
 			}
@@ -158,7 +148,7 @@ public class DownloadService extends Service {
 
 				foreCastText = getTextForecast(position.getTextName());
 				if (foreCastText == null) {
-					foreCastText = getString(R.string.forecastTextError);
+					foreCastText = getString(R.string.errormsg_forecast_text);
 				}
 
 				forecastBitmap = downlaodBitmap("http://www.dmi.dk/dmi/femdgn_"
@@ -167,10 +157,14 @@ public class DownloadService extends Service {
 					Log.d(TAG, "Bitmap is null");
 				}
 
-				Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
-				intent.putExtra(REGION, position.getRegion());
-				intent.putExtra(FORECAST_TEXT, foreCastText);
-				intent.putExtra(FORECAST_BITMAP, forecastBitmap);
+				Intent intent = new Intent(
+						getString(R.string.broadcast_receiver_main));
+				intent.putExtra(getString(R.string.intent_region),
+						position.getRegion());
+				intent.putExtra(getString(R.string.intent_forecast_text),
+						foreCastText);
+				intent.putExtra(getString(R.string.intent_forecast_bitmap),
+						forecastBitmap);
 				LocalBroadcastManager.getInstance(getBaseContext())
 						.sendBroadcast(intent);
 			} else {
@@ -216,9 +210,8 @@ public class DownloadService extends Service {
 				Log.d(TAG, e.toString());
 			} catch (IOException e) {
 				Log.d(TAG, e.toString());
-				sendErrorBroadcast(getString(R.string.internet_connection_error));
+				sendErrorBroadcast(getString(R.string.errormsg_save_bitmap));
 				throw new InterruptedException();
-
 			}
 		}
 
@@ -251,7 +244,8 @@ public class DownloadService extends Service {
 				Log.d(TAG, e.toString());
 			} catch (IOException e) {
 				Log.d(TAG, e.toString());
-				sendErrorBroadcast(getString(R.string.internet_connection_error));
+				sendErrorBroadcast(getString(R.string.errormsg_internet_connection)
+						+ getString(R.string.errormsg_forecast_text));
 				throw new InterruptedException();
 			} finally {
 				if (reader != null)
@@ -306,7 +300,8 @@ public class DownloadService extends Service {
 				return bitmap;
 			} catch (IOException e) {
 				Log.d(TAG, e.toString());
-				sendErrorBroadcast(getString(R.string.internet_connection_error));
+				sendErrorBroadcast(getString(R.string.errormsg_internet_connection)
+						+ getString(R.string.errormsg_download_bitmap));
 				throw new InterruptedException();
 			}
 		}
@@ -354,7 +349,8 @@ public class DownloadService extends Service {
 
 			if (response == null) {
 				Log.d(TAG, "HttpResponse is null");
-				sendErrorBroadcast(getString(R.string.internet_connection_error));
+				sendErrorBroadcast(getString(R.string.errormsg_geo_location)
+						+ myURI);
 				throw new InterruptedException();
 			}
 
@@ -437,7 +433,8 @@ public class DownloadService extends Service {
 					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
 			if (!isGPSEnabled && !isNetworkEnabled) {
-				// TODO: no network provider is enabled
+				sendErrorBroadcast(getString(R.string.errormsg_location_manager));
+				throw new InterruptedException();
 			} else {
 				// First get location from Network Provider
 				if (isNetworkEnabled) {
@@ -512,9 +509,10 @@ public class DownloadService extends Service {
 	}
 
 	private void sendErrorBroadcast(String errorText) {
-		Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
-		intent.putExtra(CONNECTION_ERROR, "Error");
-		intent.putExtra(TEXT_CONNECTION_ERROR, errorText);
+		Intent intent = new Intent(getString(R.string.broadcast_receiver_main));
+		intent.putExtra(getString(R.string.intent_connection_error), "Error");
+		intent.putExtra(getString(R.string.intent_connection_error_text),
+				errorText);
 		LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(
 				intent);
 	}

@@ -28,7 +28,7 @@ public class CityActivity extends Activity {
 		Log.d(TAG, "Oncreate");
 		mDMIApplication = (DMIApplication) this.getApplicationContext();
 		super.onCreate(savedInstanceState);
-		
+
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_city);
 
@@ -67,7 +67,7 @@ public class CityActivity extends Activity {
 		mDMIApplication.setCurrentActivity(this);
 		LocalBroadcastManager.getInstance(this).registerReceiver(
 				mMessageReceiver,
-				new IntentFilter(DownloadService.BROADCAST_RECEIVER_CITY));
+				new IntentFilter(getString(R.string.broadcast_receiver_city)));
 		super.onResume();
 	}
 

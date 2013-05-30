@@ -1,19 +1,37 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
 
+    <!-- Names and titles -->
     <string name="app_name">Simple DMI app</string>
+    <string name="title_activity_region">RegionActivity</string>
+    <string name="title_service_location">LocationService</string>
+    <string name="title_activity_preferences">Usersettings</string>
     <string name="action_settings">Settings</string>
+    <!-- Misc -->
+    <string name="updateButton">Update</string>
     <string name="feedback">If you have any feedback, shoot us an e-mail</string>
     <string name="mail_addr">10695@iha.dk</string>
     <string name="loading">Loading weather, please wait</string>
-    <string name="title_activity_region">RegionActivity</string>
-    <string name="title_service_location">LocationService</string>
-    <string name="refreshButton">Update location</string>
-    <string name="updateButton">Update</string>
-    <string name="forecastTextError">Forecast text could not be retreived.</string>
     <string name="region">Regional vejrudsigt for</string>
-    <string name="title_activity_preferences">Usersettings</string>
-    <string name="internet_connection_error">Connection error!\r\nMake sure to turn on your internet connection.</string>
+    <!-- Broadcast identifiers -->
+    <string name="broadcast_receiver_main">com.kn10731.themeproject.simpledmiapp.downloadIntentMain</string>
+    <string name="broadcast_receiver_city">com.kn10731.themeproject.simpledmiapp.downloadIntentCity</string>
+    <!-- Intent extras -->
+    <string name="intent_forecast_text">RegionText</string>
+    <string name="intent_forecast_bitmap">RegionBitmap</string>
+    <string name="intent_two_day_bitmap">TwoDayBitmap</string>
+    <string name="intent_nine_day_bitmap">NineDayBitmap</string>
+    <string name="intent_fifteen_day_bitmap">FifteenDayBitmap</string>
+    <string name="intent_region">Region</string>
+    <string name="intent_connection_error">ConnectionError</string>
+    <string name="intent_connection_error_text">ConnectionErrorText</string>
+    <!-- Error messages -->
+    <string name="errormsg_internet_connection">Connection error!\r\nMake sure to turn on your internet connection.</string>
+    <string name="errormsg_geo_location">\n\rThe geo location service is not available: \n\r</string>
+    <string name="errormsg_location_manager">No Location manager is enabled!</string>
+    <string name="errormsg_save_bitmap">Internal error: Failed saving images.</string>
+    <string name="errormsg_forecast_text">\n\rFailed downloading forecast text</string>
+    <string name="errormsg_download_bitmap">\n\rFailed downloading bitmap.</string>
     <!-- Real region names -->
     <string name="nordj">Nordjylland</string>
     <string name="midtj">Midt og Vestjylland</string>
