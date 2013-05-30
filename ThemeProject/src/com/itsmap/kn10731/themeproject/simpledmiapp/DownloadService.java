@@ -255,9 +255,14 @@ public class DownloadService extends Service {
 				String end = "</td>";
 				String part = builder.substring(builder.indexOf(start)
 						+ start.length() + 1);
-				String question = part.substring(0, part.indexOf(end));
-
-				return question;
+				String forecast = part.substring(0, part.indexOf(end));
+				
+				// Replace wrongly encoded nordic characters
+				forecast = forecast.replaceAll("&aelig;", "æ");
+				forecast = forecast.replaceAll("&oslash;","ø");
+				forecast = forecast.replaceAll("&aring;", "å");
+				
+				return forecast;
 
 			} catch (Exception e) {
 				Log.d(TAG, e.toString());
