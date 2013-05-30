@@ -13,6 +13,7 @@
     <string name="forecastTextError">Forecast text could not be retreived.</string>
     <string name="region">Regional vejrudsigt for</string>
     <string name="title_activity_preferences">Usersettings</string>
+    <string name="internet_connection_error">Connection error!\r\nMake sure to turn on your internet connection.</string>
     <!-- Real region names -->
     <string name="nordj">Nordjylland</string>
     <string name="midtj">Midt og Vestjylland</string>

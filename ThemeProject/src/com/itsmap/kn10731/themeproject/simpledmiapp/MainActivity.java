@@ -32,24 +32,29 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG, "Received broadcast");
-			
+
 			FragmentManager fragMang = getSupportFragmentManager();
-			fragMang.beginTransaction()
-					.replace(R.id.frameLayout, new RegionFragment(),
-							"regionFragment").commit();
-			fragMang.executePendingTransactions();
+			if (fragMang.findFragmentByTag("regionFragment") == null) {
+				fragMang.beginTransaction()
+						.replace(R.id.frameLayout, new RegionFragment(),
+								"regionFragment").commit();
+				fragMang.executePendingTransactions();
+			}
+
 			RegionFragment regionFragment = (RegionFragment) fragMang
 					.findFragmentByTag("regionFragment");
 
-			regionFragment
-					.setTextVievs(
-							intent.getExtras().getString(
-									DownloadService.FORECAST_TEXT),
-							intent.getExtras()
-									.getString(DownloadService.REGION));
+			if (intent.getStringExtra(DownloadService.CONNECTION_ERROR) == null) {
+				regionFragment.setTextVievs("Internet connection error!", "");
+			} else if (intent.getExtras().getString(DownloadService.REGION) != null) {
+				regionFragment.setTextVievs(
+						intent.getExtras().getString(
+								DownloadService.FORECAST_TEXT), intent
+								.getExtras().getString(DownloadService.REGION));
 
-			regionFragment.setRegionBitmap((Bitmap) intent
-					.getParcelableExtra(DownloadService.FORECAST_BITMAP));
+				regionFragment.setRegionBitmap((Bitmap) intent
+						.getParcelableExtra(DownloadService.FORECAST_BITMAP));
+			}
 			fragMang.executePendingTransactions();
 		}
 	};
@@ -85,9 +90,6 @@ public class MainActivity extends FragmentActivity {
 		} catch (IOException e) {
 			Log.d(TAG, e.toString());
 		}
-
-		Intent intent = new Intent(getApplication(), DownloadService.class);
-		startService(intent);
 	}
 
 	@Override
@@ -151,7 +153,6 @@ public class MainActivity extends FragmentActivity {
 		if (findViewById(R.id.progressBar1) != null) {
 			Log.d(TAG, "Restarting downloadService.");
 			Intent intent = new Intent(getApplication(), DownloadService.class);
-			stopService(intent);
 			startService(intent);
 		}
 

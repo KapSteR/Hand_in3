@@ -54,6 +54,8 @@ public class DownloadService extends Service {
 	public static final String NINE_DAY_BITMAP = "NineDayBitmap";
 	public static final String FIFTEEN_DAY_BITMAP = "FifteenDayBitmap";
 	public static final String REGION = "Region";
+	public static final String CONNECTION_ERROR = "ConnectionError";
+	public static final String TEXT_CONNECTION_ERROR = "ConnectionError";
 
 	protected LocationManager locationManager;
 	private boolean isGPSEnabled = false;
@@ -62,50 +64,63 @@ public class DownloadService extends Service {
 
 	public Position position = new Position(this);
 
+	private Thread backgroundThread;
+
 	private Runnable downloadTask = new Runnable() {
 		private static final String POSTAL_CODE = "postnumre";
 		private static final String POLICE_COMMUNITY = "politikredse";
 
 		public void run() {
-			if (location != null) {
+			try {
+				if (location != null) {
 
-				// Usersettings
-				SharedPreferences sharedPrefs = PreferenceManager
-						.getDefaultSharedPreferences(getApplication());
+					// Usersettings
+					SharedPreferences sharedPrefs = PreferenceManager
+							.getDefaultSharedPreferences(getApplication());
 
-				boolean useCurrentLocation = sharedPrefs.getBoolean(
-						getString(R.string.pref_use_location), true);
+					boolean useCurrentLocation = sharedPrefs.getBoolean(
+							getString(R.string.pref_use_location), true);
 
-				if (!useCurrentLocation) {
-					position.setPostCode(sharedPrefs.getString(
-							getString(R.string.pref_default_city), "-1"));
-					position.setRegion(Integer.valueOf(sharedPrefs.getString(
-							getString(R.string.pref_default_region), "-1")));
-					Log.d(TAG, sharedPrefs.getString(
-							getString(R.string.pref_default_city), "default"));
-				} else {
+					if (!useCurrentLocation) {
+						position.setPostCode(sharedPrefs.getString(
+								getString(R.string.pref_default_city), "-1"));
+						position.setRegion(Integer.valueOf(sharedPrefs
+								.getString(
+										getString(R.string.pref_default_region),
+										"-1")));
+						Log.d(TAG, sharedPrefs.getString(
+								getString(R.string.pref_default_city),
+								"default"));
+					} else {
 
-					String latitude = String.valueOf(location.getLatitude());
-					String longitude = String.valueOf(location.getLongitude());
+						String latitude = String
+								.valueOf(location.getLatitude());
+						String longitude = String.valueOf(location
+								.getLongitude());
 
-					// Get data for Region
-					JSONObject jObject = getGeoData(latitude, longitude,
-							POLICE_COMMUNITY);
-					if (jObject != null) {
-						parseRegion(jObject);
+						// Get data for Region
+						JSONObject jObject = getGeoData(latitude, longitude,
+								POLICE_COMMUNITY);
+						if (jObject != null) {
+							parseRegion(jObject);
+						}
+
+						jObject = getGeoData(latitude, longitude, POSTAL_CODE);
+						if (jObject != null) {
+							parsePostalCode(jObject);
+						}
 					}
-
-					jObject = getGeoData(latitude, longitude, POSTAL_CODE);
-					if (jObject != null) {
-						parsePostalCode(jObject);
-					}
+					downloadRegionInfo();
+					downloadCityInfo();
 				}
-				downloadRegionInfo();
-				downloadCityInfo();
+			} catch (InterruptedException e) {
+				Log.d(TAG, "downloadTask: " + e.toString());
+				stopSelf();
 			}
+
 		}
 
-		private void downloadCityInfo() {
+		private void downloadCityInfo() throws InterruptedException {
 			String postalCode = position.getPostCode();
 			if (postalCode == null) {
 				Log.d(TAG, "postalCode is not set");
@@ -136,7 +151,7 @@ public class DownloadService extends Service {
 			}
 		}
 
-		private void downloadRegionInfo() {
+		private void downloadRegionInfo() throws InterruptedException {
 			if (position.getRegion() != null) {
 				String foreCastText;
 				Bitmap forecastBitmap;
@@ -164,7 +179,7 @@ public class DownloadService extends Service {
 		}
 
 		private void downloadAndSaveCityBitmaps(String postalCode,
-				boolean showUncertanties) {
+				boolean showUncertanties) throws InterruptedException {
 			String twoDayUrl, nineDayUrl, fifteenDayUrl;
 			Bitmap twoDayBitmap, nineDayBitmap, fifteenDayBitmap;
 
@@ -201,10 +216,14 @@ public class DownloadService extends Service {
 				Log.d(TAG, e.toString());
 			} catch (IOException e) {
 				Log.d(TAG, e.toString());
+				sendErrorBroadcast(getString(R.string.internet_connection_error));
+				throw new InterruptedException();
+
 			}
 		}
 
-		private String getTextForecast(String region) {
+		private String getTextForecast(String region)
+				throws InterruptedException {
 
 			URL url = null;
 			try {
@@ -232,6 +251,8 @@ public class DownloadService extends Service {
 				Log.d(TAG, e.toString());
 			} catch (IOException e) {
 				Log.d(TAG, e.toString());
+				sendErrorBroadcast(getString(R.string.internet_connection_error));
+				throw new InterruptedException();
 			} finally {
 				if (reader != null)
 					try {
@@ -243,6 +264,10 @@ public class DownloadService extends Service {
 			try {
 				String start = "<td class=\"broedtekst\"><td>";
 				String end = "</td>";
+				if (builder == null) {
+					Log.d(TAG, "Builder is null");
+					return null;
+				}
 				String part = builder.substring(builder.indexOf(start)
 						+ start.length() + 1);
 				String forecast = part.substring(0, part.indexOf(end));
@@ -260,7 +285,8 @@ public class DownloadService extends Service {
 			return null;
 		}
 
-		private Bitmap downlaodBitmap(String urlString) {
+		private Bitmap downlaodBitmap(String urlString)
+				throws InterruptedException {
 			Bitmap bitmap = null;
 
 			try {
@@ -280,11 +306,13 @@ public class DownloadService extends Service {
 				return bitmap;
 			} catch (IOException e) {
 				Log.d(TAG, e.toString());
+				sendErrorBroadcast(getString(R.string.internet_connection_error));
+				throw new InterruptedException();
 			}
-			return null;
 		}
 
-		public JSONObject getGeoData(String lat, String lng, String type) {
+		public JSONObject getGeoData(String lat, String lng, String type)
+				throws InterruptedException {
 			// Takes types "postnumre" or "politikredse"
 
 			URI myURI = null;
@@ -299,12 +327,12 @@ public class DownloadService extends Service {
 			// Set the timeout in milliseconds until a connection is
 			// established.
 			// The default value is zero, that means the timeout is not used.
-			int timeoutConnection = 4000;
+			int timeoutConnection = 2000;
 			HttpConnectionParams.setConnectionTimeout(httpParameters,
 					timeoutConnection);
 			// Set the default socket timeout (SO_TIMEOUT)
 			// in milliseconds which is the timeout for waiting for data.
-			int timeoutSocket = 7000;
+			int timeoutSocket = 4000;
 			HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
 
 			DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
@@ -326,9 +354,8 @@ public class DownloadService extends Service {
 
 			if (response == null) {
 				Log.d(TAG, "HttpResponse is null");
-				// TODO: Internet connection must be enabled!!
-				// UnknownHostException
-				return null;
+				sendErrorBroadcast(getString(R.string.internet_connection_error));
+				throw new InterruptedException();
 			}
 
 			HttpEntity entity = response.getEntity();
@@ -455,20 +482,16 @@ public class DownloadService extends Service {
 			Log.d(TAG, "Lat: " + lat + ". Lng: " + lng);
 		}
 
-		Thread backgroundThread = new Thread(downloadTask) {
+		backgroundThread = new Thread(downloadTask) {
 			@Override
 			public void run() {
 				try {
-					downloadTask.run();
+					super.run();
 				} catch (Exception e) {
-					Log.d(TAG, e.toString());
+					Log.d(TAG, "backgroundThread:" + e.toString());
 				} finally {
-					if (downloadTask != null) {
-						stopSelf();
-						Log.d(TAG, "DownloadService stopped.");
-					} else {
-						Log.d(TAG, "downloadTask is null!");
-					}
+					stopSelf();
+					Log.d(TAG, "DownloadService stopped.");
 
 				}
 			}
@@ -486,6 +509,20 @@ public class DownloadService extends Service {
 			Log.d(TAG, "Could not create file.");
 			return null;
 		}
+	}
 
+	private void sendErrorBroadcast(String errorText) {
+		Intent intent = new Intent(BROADCAST_RECEIVER_MAIN);
+		intent.putExtra(CONNECTION_ERROR, "Error");
+		intent.putExtra(TEXT_CONNECTION_ERROR, errorText);
+		LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(
+				intent);
+	}
+
+	@Override
+	public void onDestroy() {
+		Log.d(TAG, "OnDestroy");
+		backgroundThread.interrupt();
+		super.onDestroy();
 	}
 }

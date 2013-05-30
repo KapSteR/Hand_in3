@@ -65,33 +65,32 @@ public class PreferencesActivity extends PreferenceActivity implements
 						.setEnabled(true);
 			}
 		} else if (key.equals(getString(R.string.pref_default_city))) {
-			findPreference(getString(R.string.pref_default_city))
-					.setSummary(
-							getString(R.string.pref_default_city_summary));
+			findPreference(getString(R.string.pref_default_city)).setSummary(
+					getString(R.string.pref_default_city_summary));
 		}
-		
-		String defaultCity = sharedPrefs.getString(getString(R.string.pref_default_city),"-1");
-		String defaultRegion = sharedPrefs.getString(getString(R.string.pref_default_region),"-1");
-		
-		if(!defaultCity.equals("-1")){
-			findPreference(getString(R.string.pref_default_city))
-			.setSummary(
-					getString(R.string.pref_default_city_summary) + " " + defaultCity);
+
+		String defaultCity = sharedPrefs.getString(
+				getString(R.string.pref_default_city), "-1");
+		String defaultRegion = sharedPrefs.getString(
+				getString(R.string.pref_default_region), "-1");
+
+		if (!defaultCity.equals("-1")) {
+			findPreference(getString(R.string.pref_default_city)).setSummary(
+					getString(R.string.pref_default_city_summary) + " "
+							+ defaultCity);
 		} else {
-			findPreference(getString(R.string.pref_default_city))
-			.setSummary(
+			findPreference(getString(R.string.pref_default_city)).setSummary(
 					getString(R.string.pref_default_city_summary_choose));
 		}
-		if(!defaultRegion.equals("-1")){
+		if (!defaultRegion.equals("-1")) {
 			Position position = new Position(getBaseContext());
 			position.setRegion(Integer.valueOf(defaultRegion));
-			
-			findPreference(getString(R.string.pref_default_region))
-			.setSummary(
-					getString(R.string.pref_default_region_summary) + " " + position.getRegion());
+
+			findPreference(getString(R.string.pref_default_region)).setSummary(
+					getString(R.string.pref_default_region_summary) + " "
+							+ position.getRegion());
 		} else {
-			findPreference(getString(R.string.pref_default_region))
-			.setSummary(
+			findPreference(getString(R.string.pref_default_region)).setSummary(
 					getString(R.string.pref_default_region_summary_choose));
 		}
 	}

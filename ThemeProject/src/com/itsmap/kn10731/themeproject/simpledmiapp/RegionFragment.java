@@ -29,13 +29,17 @@ public class RegionFragment extends Fragment {
 	}
 
 	public void setTextVievs(String forecastText, String region) {
-		TextView forecastTextView = (TextView) getView().findViewById(
-				R.id.forecastTextView);
-		forecastTextView.setText(forecastText);
-		forecastTextView.setMovementMethod(new ScrollingMovementMethod());
-		
+		if (forecastText != null && !forecastText.equals("")) {
+			TextView forecastTextView = (TextView) getView().findViewById(
+					R.id.forecastTextView);
+			forecastTextView.setText(forecastText);
+			forecastTextView.setMovementMethod(new ScrollingMovementMethod());
+		}
+
 		TextView regionTextView = (TextView) getView().findViewById(
 				R.id.regionTextView);
-		regionTextView.setText(getString(R.string.region) + " " + region);
+		if (region != null && !region.equals("")) {
+			regionTextView.setText(getString(R.string.region) + " " + region);
+		}
 	}
 }
