@@ -62,7 +62,7 @@ public class DownloadService extends Service {
 		public void run() {
 			try {
 				if (location != null) {
-					
+
 					// Usersettings
 					SharedPreferences sharedPrefs = PreferenceManager
 							.getDefaultSharedPreferences(getApplication());
@@ -99,7 +99,7 @@ public class DownloadService extends Service {
 							parsePostalCode(jObject);
 						}
 					}
-					Log.d(TAG,"Region/city collected");
+					Log.d(TAG, "Region/city collected");
 					downloadRegionInfo();
 					downloadCityInfo();
 				} else {
@@ -154,8 +154,11 @@ public class DownloadService extends Service {
 					foreCastText = getString(R.string.errormsg_forecast_text);
 				}
 
-				forecastBitmap = downlaodBitmap("http://www.dmi.dk/uploads/tx_dmidatastore/webservice/d/n/a/l/l/femdgn_"
+				forecastBitmap = downlaodBitmap("http://www.dmi.dk/uploads/tx_dmidatastore/webservice/"
+						+ position.getPngName2()
+						+ "/femdgn_"
 						+ position.getPngName() + ".png");
+
 				if (forecastBitmap == null) {
 					Log.d(TAG, "Bitmap is null");
 				}
@@ -220,7 +223,7 @@ public class DownloadService extends Service {
 
 		private String getTextForecast(String region)
 				throws InterruptedException {
-			Log.d(TAG,"Getting forecast text");
+			Log.d(TAG, "Getting forecast text");
 
 			URL url = null;
 			try {
@@ -241,7 +244,7 @@ public class DownloadService extends Service {
 				}
 				builder.append(reader.readLine().trim()); // Line 166 is the
 															// weather Forecast
-				Log.d(TAG,builder.toString());
+				Log.d(TAG, builder.toString());
 
 			} catch (UnsupportedEncodingException e) {
 				Log.d(TAG, e.toString());
@@ -440,8 +443,8 @@ public class DownloadService extends Service {
 						location = locationManager
 								.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 						Log.d(TAG, "Getting location with Network");
-						if(location == null){
-							Log.d(TAG,"Could not get location with network");
+						if (location == null) {
+							Log.d(TAG, "Could not get location with network");
 						}
 					}
 				}
@@ -479,12 +482,12 @@ public class DownloadService extends Service {
 			String lng = String.valueOf(location.getLongitude());
 			Log.d(TAG, "Lat: " + lat + ". Lng: " + lng);
 		}
-		
+
 		backgroundThread = new Thread(downloadTask) {
 			@Override
 			public void run() {
 				try {
-					Log.d(TAG,"Running background thread");
+					Log.d(TAG, "Running background thread");
 					super.run();
 				} catch (Exception e) {
 					Log.d(TAG, "backgroundThread:" + e.toString());

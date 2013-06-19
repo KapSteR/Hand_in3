@@ -50,14 +50,22 @@
     <string name="png_vestsj">vestsjaelland</string>
     <string name="png_kbh">kobenhavn</string>
     <string name="png_born">bornholm</string>
+    <string name="png_nordj_2">d/n/a/l/l</string>
+    <string name="png_midtj_2">d/n/a/l/l</string>
+    <string name="png_ostj_2">d/n/a/l/l</string>
+    <string name="png_sydj_2">d/n/a/l/l</string>
+    <string name="png_fyn_2">n/y/f/_/n</string>
+    <string name="png_vestsj_2">d/n/a/l/l</string>
+    <string name="png_kbh_2">n/v/a/h/n</string>
+    <string name="png_born_2">m/l/o/h/n</string>
     <!-- URL-pieces for forecast text -->
     <string name="text_nordj">nordjylland</string>
-    <string name="text_midtj">mvestjylland</string>
+    <string name="text_midtj">mvjylland</string>
     <string name="text_ostj">oestjylland</string>
     <string name="text_sydj">ssjylland</string>
     <string name="text_fyn">fyn</string>
-    <string name="text_vestsj">vssjlol</string>
-    <string name="text_kbh">kbhnsj</string>
+    <string name="text_vestsj">vssjaelland</string>
+    <string name="text_kbh">kbhnsjaelland</string>
     <string name="text_born">bornholm</string>
     <!-- Preferences text -->
     <string name="pref_uncertainty">pref_uncertainty</string>

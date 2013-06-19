@@ -85,6 +85,7 @@ public class Position {
 	private String region = null;
 	private String textName = null;
 	private String pngName = null;
+	private String pngName2 = null;
 
 	public void setRegion(int regionIndex) {
 
@@ -93,61 +94,73 @@ public class Position {
 
 			this.region = context.getString(R.string.nordj);
 			this.pngName = context.getString(R.string.png_nordj);
+			this.pngName2 = context.getString(R.string.png_nordj_2);
 			this.textName = context.getString(R.string.text_nordj);
 			break;
 		case LOCALE_KBHV:
 			this.region = context.getString(R.string.kbh);
 			this.pngName = context.getString(R.string.png_kbh);
+			this.pngName2 = context.getString(R.string.png_kbh_2);
 			this.textName = context.getString(R.string.text_kbh);
 			break;
 		case LOCALE_KBH:
 			this.region = context.getString(R.string.kbh);
 			this.pngName = context.getString(R.string.png_kbh);
+			this.pngName2 = context.getString(R.string.png_kbh_2);
 			this.textName = context.getString(R.string.text_kbh);
 			break;
 		case LOCALE_BORN:
 			this.region = context.getString(R.string.born);
 			this.pngName = context.getString(R.string.png_born);
+			this.pngName2 = context.getString(R.string.png_born_2);
 			this.textName = context.getString(R.string.text_born);
 			break;
 		case LOCALE_OSTJ:
 			this.region = context.getString(R.string.ostj);
 			this.pngName = context.getString(R.string.png_ostj);
+			this.pngName2 = context.getString(R.string.png_ostj_2);
 			this.textName = context.getString(R.string.text_ostj);
 			break;
 		case LOCALE_MIDTVJ:
 			this.region = context.getString(R.string.midtj);
 			this.pngName = context.getString(R.string.png_midtj);
+			this.pngName2 = context.getString(R.string.png_midtj_2);
 			this.textName = context.getString(R.string.text_midtj);
 			break;
 		case LOCALE_SYDOJ:
 			this.region = context.getString(R.string.sydj);
 			this.pngName = context.getString(R.string.png_sydj);
+			this.pngName2 = context.getString(R.string.png_sydj_2);
 			this.textName = context.getString(R.string.text_sydj);
 			break;
 		case LOCALE_SYDSJ:
 			this.region = context.getString(R.string.sydj);
 			this.pngName = context.getString(R.string.png_sydj);
+			this.pngName2 = context.getString(R.string.png_sydj_2);
 			this.textName = context.getString(R.string.text_sydj);
 			break;
 		case LOCALE_FYN:
 			this.region = context.getString(R.string.fyn);
 			this.pngName = context.getString(R.string.png_fyn);
+			this.pngName2 = context.getString(R.string.png_fyn_2);
 			this.textName = context.getString(R.string.text_fyn);
 			break;
 		case LOCALE_SSLOL:
 			this.region = context.getString(R.string.vestsj);
 			this.pngName = context.getString(R.string.png_vestsj);
+			this.pngName2 = context.getString(R.string.png_vestsj_2);
 			this.textName = context.getString(R.string.text_vestsj);
 			break;
 		case LOCALE_MIDTVS:
 			this.region = context.getString(R.string.vestsj);
 			this.pngName = context.getString(R.string.png_vestsj);
+			this.pngName2 = context.getString(R.string.png_vestsj_2);
 			this.textName = context.getString(R.string.text_vestsj);
 			break;
 		case LOCALE_NORDS:
 			this.region = context.getString(R.string.kbh);
 			this.pngName = context.getString(R.string.png_kbh);
+			this.pngName2 = context.getString(R.string.png_kbh_2);
 			this.textName = context.getString(R.string.text_kbh);
 			break;
 		default:
@@ -165,5 +178,9 @@ public class Position {
 
 	public String getPngName() {
 		return pngName;
+	}
+	
+	public String getPngName2() {
+		return pngName2;
 	}
 }
