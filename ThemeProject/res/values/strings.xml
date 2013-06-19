@@ -53,7 +53,7 @@
     <!-- URL-pieces for forecast text -->
     <string name="text_nordj">nordjylland</string>
     <string name="text_midtj">mvestjylland</string>
-    <string name="text_ostj">ostjylland</string>
+    <string name="text_ostj">oestjylland</string>
     <string name="text_sydj">ssjylland</string>
     <string name="text_fyn">fyn</string>
     <string name="text_vestsj">vssjlol</string>

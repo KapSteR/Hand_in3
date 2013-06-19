@@ -62,7 +62,7 @@ public class DownloadService extends Service {
 		public void run() {
 			try {
 				if (location != null) {
-
+					
 					// Usersettings
 					SharedPreferences sharedPrefs = PreferenceManager
 							.getDefaultSharedPreferences(getApplication());
@@ -99,8 +99,11 @@ public class DownloadService extends Service {
 							parsePostalCode(jObject);
 						}
 					}
+					Log.d(TAG,"Region/city collected");
 					downloadRegionInfo();
 					downloadCityInfo();
+				} else {
+					Log.d(TAG, "Could not get location");
 				}
 			} catch (InterruptedException e) {
 				Log.d(TAG, "downloadTask: " + e.toString());
@@ -151,7 +154,7 @@ public class DownloadService extends Service {
 					foreCastText = getString(R.string.errormsg_forecast_text);
 				}
 
-				forecastBitmap = downlaodBitmap("http://www.dmi.dk/dmi/femdgn_"
+				forecastBitmap = downlaodBitmap("http://www.dmi.dk/uploads/tx_dmidatastore/webservice/d/n/a/l/l/femdgn_"
 						+ position.getPngName() + ".png");
 				if (forecastBitmap == null) {
 					Log.d(TAG, "Bitmap is null");
@@ -217,12 +220,13 @@ public class DownloadService extends Service {
 
 		private String getTextForecast(String region)
 				throws InterruptedException {
+			Log.d(TAG,"Getting forecast text");
 
 			URL url = null;
 			try {
 				url = new URL(
-						"http://www.dmi.dk/dmi/index/danmark/regionaludsigten/"
-								+ region + ".htm");
+						"http://www.dmi.dk/vejr/til-lands/regionaludsigten/"
+								+ region + "/");
 			} catch (MalformedURLException e) {
 				Log.d(TAG, e.toString());
 			}
@@ -230,15 +234,14 @@ public class DownloadService extends Service {
 			StringBuilder builder = new StringBuilder();
 			try {
 				reader = new BufferedReader(new InputStreamReader(
-						url.openStream(), "ISO-8859-1"));
+						url.openStream(), "utf-8"));
 
-				for (int i = 1; i < 678; i++) { // skip first 677 lines
+				for (int i = 1; i < 166; i++) { // skip first 165 lines
 					reader.readLine();
 				}
-				builder.append(reader.readLine().trim()); // Line 678 is the
+				builder.append(reader.readLine().trim()); // Line 166 is the
 															// weather Forecast
-				builder.append(reader.readLine().trim()); // Or line 679 is the
-															// weather Forecast
+				Log.d(TAG,builder.toString());
 
 			} catch (UnsupportedEncodingException e) {
 				Log.d(TAG, e.toString());
@@ -256,20 +259,15 @@ public class DownloadService extends Service {
 					}
 			}
 			try {
-				String start = "<td class=\"broedtekst\"><td>";
-				String end = "</td>";
+				String start = "<p>";
+				String end = "</p>";
 				if (builder == null) {
 					Log.d(TAG, "Builder is null");
 					return null;
 				}
 				String part = builder.substring(builder.indexOf(start)
-						+ start.length() + 1);
+						+ start.length());
 				String forecast = part.substring(0, part.indexOf(end));
-
-				// Replace wrongly encoded nordic characters
-				forecast = forecast.replaceAll("&aelig;", "æ");
-				forecast = forecast.replaceAll("&oslash;", "ø");
-				forecast = forecast.replaceAll("&aring;", "å");
 
 				return forecast;
 
@@ -442,6 +440,9 @@ public class DownloadService extends Service {
 						location = locationManager
 								.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 						Log.d(TAG, "Getting location with Network");
+						if(location == null){
+							Log.d(TAG,"Could not get location with network");
+						}
 					}
 				}
 				// if GPS Enabled get location using GPS Services
@@ -478,11 +479,12 @@ public class DownloadService extends Service {
 			String lng = String.valueOf(location.getLongitude());
 			Log.d(TAG, "Lat: " + lat + ". Lng: " + lng);
 		}
-
+		
 		backgroundThread = new Thread(downloadTask) {
 			@Override
 			public void run() {
 				try {
+					Log.d(TAG,"Running background thread");
 					super.run();
 				} catch (Exception e) {
 					Log.d(TAG, "backgroundThread:" + e.toString());
